@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Exiled.API.Enums;
-using Exiled.API.Features;
-using Exiled.Events.EventArgs;
 using MEC;
-using EMap = Exiled.API.Features.Map;
 using UnityEngine;
 using YamlDotNet.Serialization;
 using System.IO;
 using Newtonsoft.Json;
 using Respawning;
 using Respawning.NamingRules;
-using Exiled.API.Features.Items;
+using Synapse.Api.Events.SynapseEventArguments;
 using MiniGamesSystem.Hats;
+using Synapse.Api;
+using Synapse.Api.Enum;
+using Synapse;
+using Synapse.Api.Items;
 
 namespace MiniGamesSystem
 {
@@ -28,8 +28,8 @@ namespace MiniGamesSystem
         Vector3 ChoosedSpawnPos;
         public List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
         public static Dictionary<string, PlayerInfo> pInfoDict = new Dictionary<string, PlayerInfo>();
-        private List<DoorType> EscapePrimary = new List<DoorType>() { DoorType.EscapePrimary };
-        private List<DoorType> SurfaceGate = new List<DoorType>() { DoorType.SurfaceGate };
+        private List<DoorType> EscapePrimary = new List<DoorType>() { DoorType.Escape_Primary };
+        private List<DoorType> SurfaceGate = new List<DoorType>() { DoorType.Surface_Gate };
         public static HashSet<string> props = new HashSet<string>();
         [YamlIgnore]
         public GameObject orginalPrefab;
@@ -55,9 +55,9 @@ namespace MiniGamesSystem
             return string.Join("\n", pInfoDict[ply.UserId].ListaCzapek);
         }
 
-        public void OnSpawningItems(SpawningItemEventArgs ev)
+        public void OnSpawningItems(Synapse.Api.Events.SynapseEventArguments.PlayerItemInteractEventArgs ev)
         {
-            ev.IsAllowed = false;
+            ev.Allow = false;
         }
 
         public void OnWTP()
@@ -138,17 +138,17 @@ namespace MiniGamesSystem
 
             coroutines.Add(Timing.RunCoroutine(LobbyTimer()));
 
-            foreach (Door door in EMap.Doors)
+            foreach (Door door in Map.Get.Doors)
             {
-                if (EscapePrimary.Contains(door.Type))
+                if (EscapePrimary.Contains(door.DoorType))
                 {
-                    door.ChangeLock(DoorLockType.SpecialDoorFeature);
+                    door.Locked = true;
                 }
 
-                if (SurfaceGate.Contains(door.Type))
+                if (SurfaceGate.Contains(door.DoorType))
                 {
-                    door.ChangeLock(DoorLockType.SpecialDoorFeature);
-                    door.IsOpen = false;
+                    door.Locked = true;
+                    door.Open = false;
                 }
 
             }
@@ -159,7 +159,7 @@ namespace MiniGamesSystem
         {
             if (AktualnyEvent == "PeanutRun")
             {
-                Round.IsLocked = false;
+                Round.Get.RoundLock = false;
             }
         }
 
@@ -171,7 +171,7 @@ namespace MiniGamesSystem
             }
         }
 
-        public void OnPlyDied(DiedEventArgs ev)
+        public void OnPlyDied(PlayerDeathEventArgs ev)
         {
             if (AktualnyEvent == "deathMatch")
             {
@@ -187,7 +187,7 @@ namespace MiniGamesSystem
 
         public void SpawnManager()
         {
-            UnityEngine.Vector3 location = Map.Rooms.First(x => x.Type == RoomType.Surface).Position;
+            UnityEngine.Vector3 location = Map.Get.Rooms.First(x => x.Zone == ZoneType.Surface).Position;
             location.y = location.y + 1;
 
             PossibleSpawnsPos.Clear();
@@ -201,13 +201,13 @@ namespace MiniGamesSystem
 
         public void OnRS()
         {
-            foreach (Player ply in Player.List)
+            foreach (Player ply in Server.Get.Players)
             {
-                ply.IsGodModeEnabled = false;
-                ply.DisableEffect<CustomPlayerEffects.Scp207>();
+                ply.GodMode = false;
+                ply.PlayerEffectsController.DisableEffect<CustomPlayerEffects.Scp207>();
                 ply.SetRank("", "default");
                 if (Extensions.hasTag) ply.RefreshTag();
-                if (Extensions.isHidden) ply.ReferenceHub.characterClassManager.CmdRequestHideTag();
+                if (Extensions.isHidden) ply.GetComponent<ReferenceHub>().characterClassManager.CmdRequestHideTag();
             }
             Timing.CallDelayed(1.5f, () =>
             {
@@ -263,16 +263,16 @@ namespace MiniGamesSystem
                 }
                 return;
             }
-            Map.Broadcast(5, $"{EventMsg} <b><color>{AktualnyEvent}</color></b>");
+            Map.Get.SendBroadcast(5, $"{EventMsg} <b><color>{AktualnyEvent}</color></b>");
             });
         }
 
-        public void OnRespawning(RespawningTeamEventArgs ev)
+        public void OnRespawning(TeamRespawnEventArgs ev)
         {
-            ev.IsAllowed = false;
+            ev.Allow = false;
         }
 
-        public void OnRndEnd(EndingRoundEventArgs ev)
+        public void OnRndEnd()
         {
             if (AktualnyEvent == "PeanutRun")
             {
@@ -288,7 +288,7 @@ namespace MiniGamesSystem
                             pInfoDict[ply.UserId] = info;
                         }
 
-                        Map.Broadcast(5, $"{ply.Nickname} wygrali!");
+                        Map.Get.SendBroadcast(5, $"{ply.NickName} wygrali!");
                     }
                 }
                 if (Player.Get(RoleType.Scp173).Count() == 1)
@@ -303,7 +303,7 @@ namespace MiniGamesSystem
                             pInfoDict[ply.UserId] = info;
                         }
 
-                        Map.Broadcast(5, $"{ply.Nickname} wygrał!");
+                        Map.Get.SendBroadcast(5, $"{ply.NickName} wygrał!");
                     }
                 }
             }
@@ -339,7 +339,7 @@ namespace MiniGamesSystem
                             }
                         }
                     }
-                    Map.Broadcast(5, "<b><color=#FAFF86>Naukowcy</color> wygrali!</b>");
+                    Map.Get.SendBroadcast(5, "<b><color=#FAFF86>Naukowcy</color> wygrali!</b>");
                 }
                 else if (team2.Count() == 0 && team1.Count() > 0)
                 {
@@ -353,7 +353,7 @@ namespace MiniGamesSystem
                             pInfoDict[ply.UserId] = info;
                         }
                     }
-                    Map.Broadcast(5, "<b><color=#EE7600>Klasa-D</color> wygrała!</b>");
+                    Map.Get.SendBroadcast(5, "<b><color=#EE7600>Klasa-D</color> wygrała!</b>");
                 }
             }
             else if (AktualnyEvent == "DodgeBall")
@@ -399,13 +399,13 @@ namespace MiniGamesSystem
             }
         }
 
-        public void OnShooting(ShootingEventArgs ev)
+        public void OnShooting(PlayerShootEventArgs ev)
         {
-            foreach (Player ply in Player.List)
+            foreach (Player ply in Server.Get.Players)
             {
                 if (props.Contains(ply.UserId))
                 {
-                    if (ev.ShotPosition == ply.Position)
+                    if (ev.TargetPosition == ply.Position)
                     {
                         ply.Kill(DamageTypes.Com18);
                     }
@@ -413,14 +413,14 @@ namespace MiniGamesSystem
             }
         }
 
-        public void OnPickingUp(PickingUpItemEventArgs ev)
+        public void OnPickingUp(PlayerPickUpItemEventArgs ev)
         {
-            if (ev.Pickup.Base.gameObject.TryGetComponent<HatItemComponent>(out var hat))
+            if (ev.Item.PickupBase.gameObject.TryGetComponent<HatItemComponent>(out var hat))
             {
-                ev.Player.ShowHint("<color=red>Nie możesz podnieść czapki!</color>");
-                ev.IsAllowed = false;
+                ev.Player.GiveTextHint("<color=red>Nie możesz podnieść czapki!</color>");
+                ev.Allow = false;
             }
-            if (props.Contains(ev.Player.UserId))
+            /*if (props.Contains(ev.Player.UserId))
             {
                 Item item = new Item(ev.Pickup.Type);
                 
@@ -439,10 +439,10 @@ namespace MiniGamesSystem
                     ev.Player.Scale = new Vector3(0.1f, 0.1f, 0.1f);
                 }
                 Timing.RunCoroutine(TpProps(ev.Pickup));
-            }
+            }*/
         }
 
-        public IEnumerator<float> TpProps(Pickup type)
+        /*public IEnumerator<float> TpProps(Pickup type)
         {
             while (true)
             {
@@ -455,11 +455,11 @@ namespace MiniGamesSystem
                 }
                 yield return Timing.WaitForSeconds(0f);
             }
-        }
+        }*/
 
-        public IEnumerator<float> Czapki(Player ply, ItemType type)
+        /*public IEnumerator<float> Czapki(Player ply, ItemType type)
         {
-            Item item = new Item(type);
+            SynapseItem item = new SynapseItem(type);
             
             Pickup Item = item.Spawn(ply.Position, default);
             while (true)
@@ -499,93 +499,92 @@ namespace MiniGamesSystem
                 }
                 yield return Timing.WaitForSeconds(0.5f);
             }
-        }
+        }*/
 
-        public void OnJoin(VerifiedEventArgs ev)
+        public void OnJoin(PlayerJoinEventArgs ev)
         {
             if (!File.Exists(Path.Combine(MiniGamesSystem.DataPath, $"{ev.Player.UserId}.json")))
             {
-                pInfoDict.Add(ev.Player.UserId, new PlayerInfo(ev.Player.Nickname));
+                pInfoDict.Add(ev.Player.UserId, new PlayerInfo(ev.Player.NickName));
             }
 
-            if (!Round.IsStarted)
+            if (!Round.Get.RoundIsActive)
             {
                 Timing.CallDelayed(0.5f, () =>
                 {
-                    ev.Player.Role = RoleType.NtfCaptain;
-                    ev.Player.IsGodModeEnabled = true;
+                    ev.Player.RoleType = RoleType.NtfCaptain;
+                    ev.Player.GodMode = true;
                     ev.Player.RankName = "W lobby";
                     ev.Player.RankColor = "pumpkin";
                 });
 
                 Timing.CallDelayed(1f, () =>
                 {
-                    ev.Player.ClearInventory(true);
-                    ev.Player.ReferenceHub.playerEffectsController.EnableEffect<CustomPlayerEffects.Scp207>(999f, false);
-                    ev.Player.ReferenceHub.playerEffectsController.ChangeEffectIntensity<CustomPlayerEffects.Scp207>(4);
+                    ev.Player.Inventory.Clear();
+                    ev.Player.GiveEffect(Effect.Scp207, 4, 999f);
                     ev.Player.Position = ChoosedSpawnPos;
                 });
 
             }
-            else if (Round.IsStarted)
+            else if (Round.Get.RoundIsActive)
             {
-                ev.Player.Broadcast(5, $"<b><i>Aktualny Tryb: <color=green>{AktualnyEvent}</color></i></b>");
+                ev.Player.SendBroadcast(5, $"<b><i>Aktualny Tryb: <color=green>{AktualnyEvent}</color></i></b>");
             }
         }
 
         private IEnumerator<float> LobbyTimer()
         {
-            while (!Round.IsStarted)
+            while (!Round.Get.RoundIsActive)
             {
                 message.Clear();
 
-                if (MiniGamesSystem.Instance.Config.HintVertPos != 0 && MiniGamesSystem.Instance.Config.HintVertPos < 0)
+                if (MiniGamesSystem.Config.HintVertPos != 0 && MiniGamesSystem.Config.HintVertPos < 0)
                 {
-                    for (int i = MiniGamesSystem.Instance.Config.HintVertPos; i < 0; i++)
+                    for (int i = MiniGamesSystem.Config.HintVertPos; i < 0; i++)
                     {
                         message.Append("\n");
                     }
                 }
 
 
-                message.Append($"<size=25><B><color=#00fe0f>DeathMatch</color> [id: 1 | głosy: {Deathmatch}]  |  <color=#00fe0f>WojnaGangów</color> [id: 2 | głosy: {GangWar}]  |  <color=#00fe0f>HideAndSeek</color> [id: 3 | głosy: {hideAndSeek}]     <color=#00fe0f>PeanutRun</color> [id: 4 | głosy: {peanutRun}]  |  <color=#00fe0f>Dodgeball</color> [id: 5 | głosy: {dgball}]</size><size=100><color=yellow>" + MiniGamesSystem.Instance.Config.TopMessage);
+                message.Append($"<size=25><B><color=#00fe0f>DeathMatch</color> [id: 1 | głosy: {Deathmatch}]  |  <color=#00fe0f>WojnaGangów</color> [id: 2 | głosy: {GangWar}]  |  <color=#00fe0f>HideAndSeek</color> [id: 3 | głosy: {hideAndSeek}]     <color=#00fe0f>PeanutRun</color> [id: 4 | głosy: {peanutRun}]  |  <color=#00fe0f>Dodgeball</color> [id: 5 | głosy: {dgball}]</size><size=100><color=yellow>" + MiniGamesSystem.Config.TopMessage);
 
                 short NetworkTimer = GameCore.RoundStart.singleton.NetworkTimer;
 
                 switch (NetworkTimer)
                 {
-                    case -2: message.Replace("%seconds", MiniGamesSystem.Instance.Config.ServerIsPaused); break;
+                    case -2: message.Replace("%seconds", MiniGamesSystem.Config.ServerIsPaused); break;
 
-                    case -1: message.Replace("%seconds", MiniGamesSystem.Instance.Config.RoundIsBeingStarted); break;
+                    case -1: message.Replace("%seconds", MiniGamesSystem.Config.RoundIsBeingStarted); break;
 
-                    case 1: message.Replace("%seconds", $"<color=green>{NetworkTimer}</color> {MiniGamesSystem.Instance.Config.OneSecondRemain}"); break;
+                    case 1: message.Replace("%seconds", $"<color=green>{NetworkTimer}</color> {MiniGamesSystem.Config.OneSecondRemain}"); break;
 
-                    case 0: message.Replace("%seconds", MiniGamesSystem.Instance.Config.RoundIsBeingStarted); break;
+                    case 0: message.Replace("%seconds", MiniGamesSystem.Config.RoundIsBeingStarted); break;
 
-                    default: message.Replace("%seconds", $"<color=green>{NetworkTimer}</color> {MiniGamesSystem.Instance.Config.XSecondsRemains}"); break;
+                    default: message.Replace("%seconds", $"<color=green>{NetworkTimer}</color> {MiniGamesSystem.Config.XSecondsRemains}"); break;
                 }
 
-                int NumOfPlayers = Player.List.Count();
+                int NumOfPlayers = Server.Get.PlayersAmount;
 
-                message.Append($"\n{MiniGamesSystem.Instance.Config.BottomMessage}");
+                message.Append($"\n{MiniGamesSystem.Config.BottomMessage}");
 
-                if (NumOfPlayers == 1) message.Replace("%players", $"<color=green>{NumOfPlayers}</color> {MiniGamesSystem.Instance.Config.OnePlayerConnected}");
-                else message.Replace("%players", $"<color=green>{NumOfPlayers}</color> {MiniGamesSystem.Instance.Config.XPlayersConnected}");
+                if (NumOfPlayers == 1) message.Replace("%players", $"<color=green>{NumOfPlayers}</color> {MiniGamesSystem.Config.OnePlayerConnected}");
+                else message.Replace("%players", $"<color=green>{NumOfPlayers}</color> {MiniGamesSystem.Config.XPlayersConnected}");
 
 
-                if (MiniGamesSystem.Instance.Config.HintVertPos != 0 && MiniGamesSystem.Instance.Config.HintVertPos > 0)
+                if (MiniGamesSystem.Config.HintVertPos != 0 && MiniGamesSystem.Config.HintVertPos > 0)
                 {
-                    for (int i = 0; i < MiniGamesSystem.Instance.Config.HintVertPos; i++)
+                    for (int i = 0; i < MiniGamesSystem.Config.HintVertPos; i++)
                     {
                         message.Append("\n");
                     }
                 }
 
 
-                foreach (Player ply in Player.List)
+                foreach (Player ply in Server.Get.Players)
                 {
-                    if (MiniGamesSystem.Instance.Config.UseHints) ply.ShowHint(message.ToString(), 1f);
-                    else ply.Broadcast(1, message.ToString());
+                    if (MiniGamesSystem.Config.UseHints) ply.GiveTextHint(message.ToString(), 1f);
+                    else ply.SendBroadcast(1, message.ToString());
                 }
 
                 yield return Timing.WaitForSeconds(1f);

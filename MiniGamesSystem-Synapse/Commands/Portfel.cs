@@ -1,37 +1,38 @@
 ﻿using System;
 using CommandSystem;
-using Exiled.API.Features;
 using RemoteAdmin;
+using Synapse;
+using Synapse.Api;
+using Synapse.Command;
 
 namespace MiniGamesSystem.Commands
 {
-    [CommandHandler(typeof(ClientCommandHandler))]
-    public class Portfel : ParentCommand
+    [CommandInformation(
+    Name = "portfel",
+    Description = "Portfel MiniGames.",
+    Platforms = new[] { Platform.ClientConsole },
+    Usage = "portfel"
+    )]
+    public class Portfel : ISynapseCommand
     {
-        public Portfel() => LoadGeneratedCommands();
 
-        public override string Command { get; } = "portfel";
-
-        public override string[] Aliases { get; } = new string[] { };
-
-        public override string Description { get; } = "Portfel MiniGames.";
-
-        public override void LoadGeneratedCommands() { }
-
-        protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+        public CommandResult Execute(CommandContext context)
         {
-                    var ply = Player.Get(((PlayerCommandSender)sender).ReferenceHub);
+            var result = new CommandResult();
+            var arguments = context.Arguments;
+            var ply = Server.Get.GetPlayer(context.Player.PlayerId);
 
-                    Player player = arguments.Count == 0 ? ply : Player.Get(arguments.At(0));
-                    string nick;
-                    bool hasData = Handler.pInfoDict.ContainsKey(player.UserId);
-                    if (player != null) nick = player.Nickname;
-                    else nick = hasData ? Handler.pInfoDict[ply.UserId].Coins.ToString() : "[BRAK DANYCH]";
-                    response =
-                        "\n=================== Portfel ===================\n" +
-                        $"Gracz: {nick} ({player.UserId})\n" +
-                        $"Coiny: {(hasData ? Handler.pInfoDict[player.UserId].Coins.ToString() : "[BRAK DANYCH]")}\n";
-                    return true;
+            Player player = arguments.Count == 0 ? ply : Server.Get.GetPlayer(arguments.At(0));
+            string nick;
+            bool hasData = Handler.pInfoDict.ContainsKey(player.UserId);
+            if (player != null) nick = player.NickName;
+            else nick = hasData ? Handler.pInfoDict[ply.UserId].Coins.ToString() : "[BRAK DANYCH]";
+            result.Message =
+                "\n=================== Portfel ===================\n" +
+                $"Gracz: {nick} ({player.UserId})\n" +
+                $"Coiny: {(hasData ? Handler.pInfoDict[player.UserId].Coins.ToString() : "[BRAK DANYCH]")}\n";
+            result.State = CommandResultState.Ok;
+            return result;
         }
     }
 }

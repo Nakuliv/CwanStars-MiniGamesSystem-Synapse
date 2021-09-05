@@ -7,12 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using Exiled.API.Enums;
-using Exiled.API.Extensions;
-using Exiled.API.Features;
 using InventorySystem.Items.Pickups;
 using MEC;
 using Mirror;
+using Synapse;
+using Synapse.Api;
 using UnityEngine;
 using Scp096 = PlayableScps.Scp096;
 
@@ -38,13 +37,13 @@ namespace MiniGamesSystem.Hats
                 try
                 {
                     if (item == null || item.gameObject == null) continue;
-                    
-                    var player = Player.Get(gameObject);
+
+                    var player = gameObject.GetComponent<Player>();
                     var pickup = item.item;
                     var pickupInfo = pickup.NetworkInfo;
                     var pickupType = pickup.GetType();
 
-                    if (player.Role == RoleType.None || player.Role == RoleType.Spectator || Helper.IsPlayerGhost(player) || (player.TryGetEffect(EffectType.Invisible, out var effect) && effect.Intensity != 0))
+                    if (player.RoleType == RoleType.None || player.RoleType == RoleType.Spectator || Helper.IsPlayerGhost(player))
                     {
                         pickupInfo.Position = Vector3.one * 6000f;
                         pickup.transform.position = Vector3.one * 6000f;
@@ -54,7 +53,7 @@ namespace MiniGamesSystem.Hats
                         continue;
                     }
 
-                    var camera = player.CameraTransform;
+                    var camera = player.CameraReference;
 
                     var rotAngles = camera.rotation.eulerAngles;
                     if (player.Team == Team.SCP) rotAngles.x = 0;
@@ -63,7 +62,7 @@ namespace MiniGamesSystem.Hats
 
                     var rot = rotation * item.rot;
                     var transform1 = pickup.transform;
-                    var pos = (player.Role != RoleType.Scp079 ? rotation * (item.pos+item.itemOffset) : (item.pos+item.itemOffset)) + camera.position;
+                    var pos = (player.RoleType != RoleType.Scp079 ? rotation * (item.pos+item.itemOffset) : (item.pos+item.itemOffset)) + camera.position;
 
                     transform1.rotation = rot;
                     pickupInfo.Rotation = new LowPrecisionQuaternion(rot);
@@ -75,45 +74,12 @@ namespace MiniGamesSystem.Hats
                     fakePickupInfo.Position = Vector3.zero;
                     fakePickupInfo.Rotation = new LowPrecisionQuaternion(Quaternion.identity);
 
-                    foreach (var player1 in Player.List)
-                    {
-                        if (player1?.UserId == null || player1.IsHost || !player1.IsVerified || Helper.IsPlayerNPC(player1)) continue;
-                        
-                        if (player1.Team == player.Team || player1 == player)
-                        {
-                            MirrorExtensions.SendFakeSyncVar(player1, pickup.netIdentity, pickupType, "NetworkInfo", pickupInfo);
-                        }
-                        else
-                            switch (player1.Role)
-                            {
-                                case RoleType.Scp93953:
-                                case RoleType.Scp93989:
-                                {
-                                    if (!player.ReferenceHub.scp939visionController.CanSee(player1.ReferenceHub.scp939visionController._myVisuals939))
-                                    {
-                                        MirrorExtensions.SendFakeSyncVar(player1, pickup.netIdentity, pickupType, "NetworkInfo", fakePickupInfo);
-                                    }
-                                    else
-                                    {
-                                        MirrorExtensions.SendFakeSyncVar(player1, pickup.netIdentity, pickupType, "NetworkInfo", pickupInfo);
-                                    }
-
-                                    break;
-                                }
-                                case RoleType.Scp096 when player1.CurrentScp is Scp096 script && script.EnragedOrEnraging && !script.HasTarget(player.ReferenceHub):
-                                    MirrorExtensions.SendFakeSyncVar(player1, pickup.netIdentity, pickupType, "NetworkInfo", fakePickupInfo);
-                                    break;
-                                default:
-                                    MirrorExtensions.SendFakeSyncVar(player1, pickup.netIdentity, pickupType, "NetworkInfo", pickupInfo);
-                                    break;
-                            }
-                    }
                 }
                 catch (Exception e)
                 {
                     if (!_threw)
                     {
-                        Log.Error(e);
+                        Synapse.Api.Logger.Get.Error(e);
                         _threw = true;
                     }
                 }

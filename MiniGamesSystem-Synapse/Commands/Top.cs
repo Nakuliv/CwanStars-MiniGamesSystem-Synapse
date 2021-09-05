@@ -1,35 +1,36 @@
 ﻿using System;
 using System.Linq;
 using CommandSystem;
-using Exiled.API.Features;
 using RemoteAdmin;
+using Synapse;
+using Synapse.Api;
+using Synapse.Command;
 
 namespace MiniGamesSystem.Commands
 {
-    [CommandHandler(typeof(ClientCommandHandler))]
-    public class Top : ParentCommand
+    [CommandInformation(
+Name = "topka",
+Aliases = new string[] { "top" },
+Description = "Top MiniGames.",
+Platforms = new[] { Platform.ClientConsole },
+Usage = "top"
+)]
+    public class Top : ISynapseCommand
     {
-        public Top() => LoadGeneratedCommands();
-
-        public override string Command { get; } = "topka";
-
-        public override string[] Aliases { get; } = new string[] {"top" };
-
-        public override string Description { get; } = "Top MiniGames.";
-
-        public override void LoadGeneratedCommands() { }
-
-        protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+        public CommandResult Execute(CommandContext context)
         {
-            var ply = Player.Get(((PlayerCommandSender)sender).ReferenceHub);
+            var result = new CommandResult();
+            var arguments = context.Arguments;
+            Player ply = Server.Get.GetPlayer(context.Player.PlayerId);
 
             string output;
             int num = 5;
             if (arguments.Count > 0 && int.TryParse(arguments.At(0), out int n)) num = n;
             if (num > 15)
             {
-                response = "<color=red>Leaderboards can be no larger than 15.</color>";
-                return false;
+                result.Message = "<color=red>Leaderboards can be no larger than 15.</color>";
+                result.State = CommandResultState.Error;
+                return result;
             }
             if (Handler.pInfoDict.Count != 0)
             {
@@ -44,13 +45,15 @@ namespace MiniGamesSystem.Commands
                     if (i != Handler.pInfoDict.Count - 1) output += "\n";
                     else break;
                 }
-                response = output;
-                return true;
+                result.Message = output;
+                result.State = CommandResultState.Ok;
+                return result;
             }
             else
             {
-                response = "<color=red>Error: Tak.</color>";
-                return false;
+                result.Message = "<color=red>Error: Brak danych graczy.</color>";
+                result.State = CommandResultState.Error;
+                return result;
             }
         }
     }

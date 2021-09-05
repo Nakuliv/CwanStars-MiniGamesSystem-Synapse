@@ -1,24 +1,23 @@
 ﻿using System;
 using CommandSystem;
-using Exiled.API.Features;
 using MiniGamesSystem.Hats;
 using RemoteAdmin;
+using Synapse;
+using Synapse.Api;
+using Synapse.Command;
 
 namespace MiniGamesSystem.Commands
 {
-    [CommandHandler(typeof(ClientCommandHandler))]
-    public class Ekwipunek : ParentCommand
+    [CommandInformation(
+        Name = "ekwipunek",
+        Aliases = new string[] { "eq" },
+        Description = "Ekwipunek MiniGames.",
+        Platforms = new[] { Platform.ClientConsole },
+        Usage = "eq"
+        )]
+
+    public class Ekwipunek : ISynapseCommand
     {
-        public Ekwipunek() => LoadGeneratedCommands();
-
-        public override string Command { get; } = "ekwipunek";
-
-        public override string[] Aliases { get; } = new string[] { "eq" };
-
-        public override string Description { get; } = "Ekwipunek MiniGames.";
-
-        public override void LoadGeneratedCommands() { }
-
         public string listaczapek(Player ply)
         {
             return string.Join("\n", Handler.pInfoDict[ply.UserId].ListaCzapek);
@@ -33,20 +32,24 @@ namespace MiniGamesSystem.Commands
             return true;
         }
 
-        protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+        public CommandResult Execute(CommandContext context)
         {
-            var ply = Player.Get(((PlayerCommandSender)sender).ReferenceHub);
+            var arguments = context.Arguments;
+            var ply = Server.Get.GetPlayer(context.Player.PlayerId);
             if (arguments.Count == 0)
             {
                 bool hasData = Handler.pInfoDict.ContainsKey(ply.UserId);
-                response =
+                return new CommandResult
+                {
+                    Message =
                 "\n=================== Ekwipunek ===================\n" +
                 "<color=#EFC01A>Twoje Czapki:</color>\n" +
                 $"{(hasData ? listaczapek(ply) : "[NIE MASZ ŻADNYCH CZAPEK]")}\n" +
                 "---------------------------\n" +
                 "<color=cyan>Aby wziąć jakąś czapkę wpisz: </color><color=yellow>.eq wez [nazwa czapki]</color>\n" +
-                "<color=cyan>Aby zdjąć czapkę wpisz: </color><color=yellow>.eq odloz</color>";
-                return true;
+                "<color=cyan>Aby zdjąć czapkę wpisz: </color><color=yellow>.eq odloz</color>",
+                    State = CommandResultState.Ok
+                };
             }
             else if (arguments.At(0) == "wez")
             {
@@ -54,107 +57,146 @@ namespace MiniGamesSystem.Commands
                 {
                     if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Coin"))
                     {
-                        if (ply.Role != RoleType.None && ply.Role != RoleType.Spectator)
+                        if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
                             //ply.SpawnHat(new HatInfo(ItemType.Coin, new UnityEngine.Vector3(1, 1, 1), ply.Position));
                             Hats.Hats.SpawnHat(ply, new HatInfo(ItemType.Coin));
-                            response = "<color=green>Założyłeś czapkę!</color>";
-                            return true;
+                            return new CommandResult
+                            {
+                                Message = "<color=green>Założyłeś czapkę!</color>",
+                                State = CommandResultState.Ok
+                            };
                         }
                     }
                     else
                     {
-                        response = "<color=red>Nie masz takiej czapki w ekwipunku!</color>";
-                        return false;
+                        return new CommandResult
+                        {
+                            Message = "<color=red>Nie masz takiej czapki w ekwipunku!</color>",
+                            State = CommandResultState.Error
+                        };
                     }
                 }
                 else if (arguments.At(1) == "Piłka")
                 {
                     if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Piłka"))
                     {
-                        if (ply.Role != RoleType.None && ply.Role != RoleType.Spectator)
+                        if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
                             ply.SpawnHat(new HatInfo(ItemType.SCP018, new UnityEngine.Vector3(1, 1, 1), ply.Position));
-                            response = "<color=green>Założyłeś czapkę!</color>";
-                            return true;
+                            return new CommandResult
+                            {
+                                Message = "<color=green>Założyłeś czapkę!</color>",
+                                State = CommandResultState.Ok
+                            };
                         }
                     }
                     else
                     {
-                        response = "<color=red>Nie masz takiej czapki w ekwipunku!</color>";
-                        return false;
+                        return new CommandResult
+                        {
+                            Message = "<color=red>Nie masz takiej czapki w ekwipunku!</color>",
+                            State = CommandResultState.Error
+                        };
                     }
                 }
                 else if (arguments.At(1) == "Cola")
                 {
                     if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Cola"))
                     {
-                        if (ply.Role != RoleType.None && ply.Role != RoleType.Spectator)
+                        if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
                             ply.SpawnHat(new HatInfo(ItemType.SCP207, new UnityEngine.Vector3(1, 1, 1), ply.Position));
-                            response = "<color=green>Założyłeś czapkę!</color>";
-                            return true;
+                            return new CommandResult
+                            {
+                                Message = "<color=green>Założyłeś czapkę!</color>",
+                                State = CommandResultState.Ok
+                            };
                         }
                     }
                     else
                     {
-                        response = "<color=red>Nie masz takiej czapki w ekwipunku!</color>";
-                        return false;
+                        return new CommandResult
+                        {
+                            Message = "<color=red>Nie masz takiej czapki w ekwipunku!</color>",
+                            State = CommandResultState.Error
+                        };
                     }
                 }
                 else if (arguments.At(1) == "Beret")
                 {
                     if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Beret"))
                     {
-                        if (ply.Role != RoleType.None && ply.Role != RoleType.Spectator)
+                        if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
                             ply.SpawnHat(new HatInfo(ItemType.SCP268, new UnityEngine.Vector3(1, 1, 1), ply.Position));
-                            response = "<color=green>Założyłeś czapkę!</color>";
-                            return true;
+                            return new CommandResult
+                            {
+                                Message = "<color=green>Założyłeś czapkę!</color>",
+                                State = CommandResultState.Ok
+                            };
                         }
                     }
                     else
                     {
-                        response = "<color=red>Nie masz takiej czapki w ekwipunku!</color>";
-                        return false;
+                        return new CommandResult
+                        {
+                            Message = "<color=red>Nie masz takiej czapki w ekwipunku!</color>",
+                            State = CommandResultState.Error
+                        };
                     }
                 }
                 else if (arguments.At(1) == "Ser")
                 {
                     if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Ser"))
                     {
-                        if (ply.Role != RoleType.None && ply.Role != RoleType.Spectator)
+                        if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                            ply.SpawnHat(new HatInfo(ItemType.KeycardScientist, new UnityEngine.Vector3(2,3,2), ply.Position));
-                            response = "<color=green>Założyłeś czapkę!</color>";
-                            return true;
+                            ply.SpawnHat(new HatInfo(ItemType.KeycardScientist, new UnityEngine.Vector3(2, 3, 2), ply.Position));
+                            return new CommandResult
+                            {
+                                Message = "<color=green>Założyłeś czapkę!</color>",
+                                State = CommandResultState.Ok
+                            };
                         }
                     }
                     else
                     {
-                        response = "<color=red>Nie masz takiej czapki w ekwipunku!</color>";
-                        return false;
+                        return new CommandResult
+                        {
+                            Message = "<color=red>Nie masz takiej czapki w ekwipunku!</color>",
+                            State = CommandResultState.Error
+                        };
                     }
                 }
                 else
                 {
-                    response = "<color=red>Nie masz takiej czapki!</color>";
-                    return false;
+                    return new CommandResult
+                    {
+                        Message = "<color=red>Nie masz takiej czapki!</color>",
+                        State = CommandResultState.Error
+                    };
                 }
             }
             else if (arguments.At(0) == "odloz")
             {
                 HatPlayerComponent playerComponent;
-                if (!ply.GameObject.TryGetComponent(out playerComponent))
+                if (!ply.gameObject.TryGetComponent(out playerComponent))
                 {
-                    playerComponent = ply.GameObject.AddComponent<HatPlayerComponent>();
+                    playerComponent = ply.gameObject.AddComponent<HatPlayerComponent>();
                 }
                 RemoveHat(playerComponent);
-                response = "<color=green>Odłożyłeś czapkę!</color>";
-                return true;
+                return new CommandResult
+                {
+                    Message = "<color=green>Odłożyłeś czapkę!</color>",
+                    State = CommandResultState.Ok
+                };
             }
-            response = "";
-            return true;
+            return new CommandResult
+            {
+                Message = "",
+                State = CommandResultState.Ok
+            };
         }
     }
 }

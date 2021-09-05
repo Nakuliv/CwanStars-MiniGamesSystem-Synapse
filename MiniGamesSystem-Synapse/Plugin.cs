@@ -1,37 +1,46 @@
 ﻿using System;
 using Exiled.API.Features;
-using ServerEv = Exiled.Events.Handlers.Server;
+using sc = SynapseController;
 using PlayerEv = Exiled.Events.Handlers.Player;
 using MapEv = Exiled.Events.Handlers.Map;
 using WarheadEv = Exiled.Events.Handlers.Warhead;
 using UnityEngine;
 using System.IO;
-using Exiled.API.Enums;
+using Synapse.Api.Plugin;
+using Synapse.Api;
 
 namespace MiniGamesSystem
 {
-    public class MiniGamesSystem : Plugin<Config>
+    [PluginInformation(
+       Name = "MiniGamesSystem",
+       Author = "Naku (Cwaniaak.)",
+       Description = "MiniGamesSystem for synapse",
+       LoadPriority = 0,
+       SynapseMajor = 2,
+       SynapseMinor = 6,
+       SynapsePatch = 0,
+       Version = "v.1.0.0"
+       )]
+    public class MiniGamesSystem : AbstractPlugin
     {
         public static GameObject workstationObj;
         public static string DataPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED"), "Plugins"), "MiniGamesSystemData");
         private static readonly Lazy<MiniGamesSystem> LazyInstance = new Lazy<MiniGamesSystem>(() => new MiniGamesSystem());
         public static MiniGamesSystem Instance => LazyInstance.Value;
 
-        public override string Name { get; } = "MiniGamesSystem";
-        public override string Author { get; } = "Naku (Cwaniaak.)";
-        public override Version Version => new Version(2, 0, 0);
-
-        public override PluginPriority Priority => PluginPriority.Highest;
+        [Config(section = "MiniGamesSystem")]
+        public static PluginConfig Config;
         private MiniGamesSystem() { }
         private Handler handler;
 
-        public override void OnEnabled()
+        public override void Load()
         {
-            base.OnEnabled();
+            base.Load();
             handler = new Handler();
 
             if (!Directory.Exists(DataPath)) Directory.CreateDirectory(DataPath);
 
+            sc.Server.Events.Map.WarheadDetonationEvent += handler.OnWarheadDetonated;
             WarheadEv.Detonated += handler.OnWarheadDetonated;
             MapEv.SpawningItem += handler.OnSpawningItems;
             ServerEv.WaitingForPlayers += handler.OnWTP;

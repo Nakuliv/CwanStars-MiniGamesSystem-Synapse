@@ -1,61 +1,72 @@
 ﻿using System;
 using CommandSystem;
-using Exiled.API.Features;
-using Exiled.Permissions.Extensions;
-using RemoteAdmin;
+using Synapse;
+using Synapse.Command;
 
 namespace MiniGamesSystem.Commands
 {
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    [CommandHandler(typeof(GameConsoleCommandHandler))]
-    public class CoinCommands : ParentCommand
+    [CommandInformation(
+        Name = "coin",
+        Description = "Coiny do minigames.",
+        Platforms = new[] { Platform.RemoteAdmin },
+        Usage = "coin add [player id] / coin remove [player id]"
+        )]
+
+    public class CoinCommands : ISynapseCommand
     {
-        public CoinCommands() => LoadGeneratedCommands();
 
-        public override string Command { get; } = "coin";
-
-        public override string[] Aliases { get; } = new string[] { };
-
-        public override string Description { get; } = "Coiny do minigames.";
-
-        public override void LoadGeneratedCommands() { }
-
-        protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+        public CommandResult Execute(CommandContext context)
         {
-            var p = Player.Get(((PlayerCommandSender)sender).ReferenceHub);
+            var arguments = context.Arguments;
+            var p = Server.Get.GetPlayer(context.Player.PlayerId);
 
-            if (!p.CheckPermission("MiniGamesSystem.addcoins"))
+            if (!p.HasPermission("MiniGamesSystem.addcoins"))
             {
-                response = "<color=red>Nie masz uprawnień do tej komendy!</color>";
-                return false;
+                return new CommandResult
+                {
+                    Message = "<color=red>Nie masz uprawnień do tej komendy!</color>",
+                    State = CommandResultState.NoPermission
+                };
             }
             else
             {
                 if (arguments.Count == 0 || arguments.Count == 0)
                 {
-                    response = "<color=red>Musisz wpisać: coin add [id gracza] [ilość] lub coin remove [id gracza] [ilość]</color>";
-                    return false;
+                    return new CommandResult
+                    {
+                        Message = "<color=red>Musisz wpisać: coin add [id gracza] [ilość] lub coin remove [id gracza] [ilość]</color>",
+                        State = CommandResultState.Error
+                    };
                 }
                 else if (arguments.Count == 3)
                 {
                     if (arguments.At(0) == "add")
                     {
                         int coiny = int.Parse(arguments.At(2));
-                        Handler.pInfoDict[Player.Get(arguments.At(1)).UserId].Coins = (Handler.pInfoDict[Player.Get(arguments.At(1)).UserId].Coins + coiny);
-                        response = $"<color=green>Pomyślnie dodano {coiny} coinów graczowi {Player.Get(arguments.At(1)).Nickname}!</color>";
-                        return true;
+                        Handler.pInfoDict[Server.Get.GetPlayer(arguments.At(1)).UserId].Coins = (Handler.pInfoDict[Server.Get.GetPlayer(arguments.At(1)).UserId].Coins + coiny);
+                        return new CommandResult
+                        {
+                            Message = $"<color=green>Pomyślnie dodano {coiny} coinów graczowi {Server.Get.GetPlayer(arguments.At(1)).NickName}!</color>",
+                            State = CommandResultState.Ok
+                        };
                     }
                     else if (arguments.At(0) == "remove")
                     {
                         int coiny = int.Parse(arguments.At(2));
-                        Handler.pInfoDict[Player.Get(arguments.At(1)).UserId].Coins = (Handler.pInfoDict[Player.Get(arguments.At(1)).UserId].Coins - coiny);
-                        response = $"<color=green>Pomyślnie usunięto {coiny} coinów graczowi {Player.Get(arguments.At(1)).Nickname}!</color>";
-                        return true;
+                        Handler.pInfoDict[Server.Get.GetPlayer(arguments.At(1)).UserId].Coins = (Handler.pInfoDict[Server.Get.GetPlayer(arguments.At(1)).UserId].Coins - coiny);
+                        return new CommandResult
+                        {
+                            Message = $"<color=green>Pomyślnie usunięto {coiny} coinów graczowi {Server.Get.GetPlayer(arguments.At(1)).NickName}!</color>",
+                            State = CommandResultState.Ok
+                        };
                     }
                 }
-                response = $"";
-                return true;
             }
+            return new CommandResult
+            {
+                Message = "<color=red>Musiałeś wpisać coś źle!</color>",
+                State = CommandResultState.Error
+            };
         }
     }
 }

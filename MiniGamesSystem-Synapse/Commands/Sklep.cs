@@ -3,33 +3,30 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using CommandSystem;
-using Exiled.API.Features;
 using Newtonsoft.Json;
 using RemoteAdmin;
+using Synapse;
+using Synapse.Command;
 
 namespace MiniGamesSystem.Commands
 {
-    [CommandHandler(typeof(ClientCommandHandler))]
-    public class Sklep : ParentCommand
+    [CommandInformation(
+    Name = "Sklep",
+    Description = "Sklep MiniGames.",
+    Platforms = new[] { Platform.ClientConsole },
+    Usage = "sklep"
+    )]
+    public class Sklep : ISynapseCommand
     {
-        public Sklep() => LoadGeneratedCommands();
-
-        public override string Command { get; } = "Sklep";
-
-        public override string[] Aliases { get; } = new string[] { };
-
-        public override string Description { get; } = "Sklep MiniGames.";
-
-        public override void LoadGeneratedCommands() { }
-
-
-        protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
+        public CommandResult Execute(CommandContext context)
         {
-            var ply = Player.Get(((PlayerCommandSender)sender).ReferenceHub);
+            var arguments = context.Arguments;
+            var result = new CommandResult();
+            var ply = Server.Get.GetPlayer(context.Player.PlayerId);
             if (arguments.Count == 0)
             {
                 bool hasData = Handler.pInfoDict.ContainsKey(ply.UserId);
-                response =
+                result.Message =
                     "\n=================== Sklep ===================\n" +
                     $"twoje Coiny: {(hasData ? Handler.pInfoDict[ply.UserId].Coins.ToString() : "[BRAK DANYCH]")}\n" +
                     "---------------------------\n" +
@@ -48,7 +45,8 @@ namespace MiniGamesSystem.Commands
                     "Admin - 999999999 Coinów\n" +
                     "---------------------------\n" +
                     "<color=cyan>Aby kupić jakiś item, wpisz:</color> <color=yellow>.sklep kup [nazwa itemu]</color>";
-                return true;
+                result.State = CommandResultState.Ok;
+                return result;
             }
             else if (arguments.Count > 0)
             {
@@ -61,8 +59,9 @@ namespace MiniGamesSystem.Commands
 
                             if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Amogus"))
                             {
-                                response = "<color=red>Masz już tego peta!</color>";
-                                return false;
+                                result.Message = "<color=red>Masz już tego peta!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
                             }
                             else
                             {
@@ -72,14 +71,16 @@ namespace MiniGamesSystem.Commands
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
-                                response = "<color=green>Kupiłeś Amogus, wpisz .eq aby zobaczyć listę twoich czapek i petów, lub nałożyć czapkę!</color>";
-                                return true;
+                                result.Message = "<color=green>Kupiłeś Amogus, wpisz .eq aby zobaczyć listę twoich czapek i petów, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
                             }
                         }
                         else
                         {
-                            response = "<color=red>Nie stać cię na to!</color>";
-                            return false;
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
                         }
                     }
                     else if (arguments.At(1) == "Vip")
@@ -89,14 +90,16 @@ namespace MiniGamesSystem.Commands
 
                             if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Vip"))
                             {
-                                response = "<color=red>Masz już tę rangę!</color>";
-                                return false;
+                                result.Message = "<color=red>Masz już tę rangę!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
                             }
                             else
                             {
                                 Handler.pInfoDict[ply.UserId].Coins = (Handler.pInfoDict[ply.UserId].Coins - 10000);
                                 Handler.pInfoDict[ply.UserId].ListaCzapek.Add("Vip");
-                                response = "<color=green>Kupiłeś rangę VIP na miesiąc!</color>";
+                                result.Message = "<color=green>Kupiłeś rangę VIP na miesiąc!</color>";
+                                result.State = CommandResultState.Ok;
                                 foreach (KeyValuePair<string, PlayerInfo> info in Handler.pInfoDict)
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
@@ -116,7 +119,7 @@ namespace MiniGamesSystem.Commands
                                         {
                         new
                         {
-                            description = $"Gracz {ply.Nickname} (steamid: {ply.UserId}) kupił VIPa na miesiąc za 10000 coinów!",
+                            description = $"Gracz {ply.NickName} (steamid: {ply.UserId}) kupił VIPa na miesiąc za 10000 coinów!",
                             title = "Nowy VIP!",
                                                               image = new {
                     url = "https://cdn.discordapp.com/attachments/844546533507727380/875720054921105418/nowyvip2.png"
@@ -129,13 +132,15 @@ namespace MiniGamesSystem.Commands
                                     sw.Write(json);
                                 }
 
-                                var responsee = (HttpWebResponse)wr.GetResponse();
+                                var response = (HttpWebResponse)wr.GetResponse();
+                                return result;
                             }
                         }
                         else
                         {
-                            response = "<color=red>Nie stać cię na to!</color>";
-                            return false;
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
                         }
                     }
                     else if (arguments.At(1) == "Coin")
@@ -144,8 +149,9 @@ namespace MiniGamesSystem.Commands
                         {
                             if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Coin"))
                             {
-                                response = "<color=red>Masz już tę czapkę!</color>";
-                                return false;
+                                result.Message = "<color=red>Masz już tę czapkę!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
                             }
                             else
                             {
@@ -155,14 +161,16 @@ namespace MiniGamesSystem.Commands
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
-                                response = "<color=green>Kupiłeś Coin, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
-                                return true;
+                                result.Message = "<color=green>Kupiłeś Coin, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
                             }
                         }
                         else
                         {
-                            response = "<color=red>Nie stać cię na to!</color>";
-                            return false;
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
                         }
                     }
                     else if (arguments.At(1) == "Piłka")
@@ -171,8 +179,9 @@ namespace MiniGamesSystem.Commands
                         {
                             if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Piłka"))
                             {
-                                response = "<color=red>Masz już tę czapkę!</color>";
-                                return false;
+                                result.Message = "<color=red>Masz już tę czapkę!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
                             }
                             else
                             {
@@ -182,14 +191,16 @@ namespace MiniGamesSystem.Commands
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
-                                response = "<color=green>Kupiłeś Piłkę, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
-                                return true;
+                                result.Message = "<color=green>Kupiłeś Piłkę, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
                             }
                         }
                         else
                         {
-                            response = "<color=red>Nie stać cię na to!</color>";
-                            return false;
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
                         }
                     }
                     else if (arguments.At(1) == "Cola")
@@ -198,8 +209,9 @@ namespace MiniGamesSystem.Commands
                         {
                             if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Cola"))
                             {
-                                response = "<color=red>Masz już tę czapkę!</color>";
-                                return false;
+                                result.Message = "<color=red>Masz już tę czapkę!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
                             }
                             else
                             {
@@ -209,14 +221,16 @@ namespace MiniGamesSystem.Commands
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
-                                response = "<color=green>Kupiłeś Colę, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
-                                return true;
+                                result.Message = "<color=green>Kupiłeś Colę, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
                             }
                         }
                         else
                         {
-                            response = "<color=red>Nie stać cię na to!</color>";
-                            return false;
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
                         }
                     }
                     else if (arguments.At(1) == "Beret")
@@ -225,8 +239,9 @@ namespace MiniGamesSystem.Commands
                         {
                             if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Beret"))
                             {
-                                response = "<color=red>Masz już tę czapkę!</color>";
-                                return false;
+                                result.Message = "<color=red>Masz już tę czapkę!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
                             }
                             else
                             {
@@ -236,14 +251,16 @@ namespace MiniGamesSystem.Commands
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
-                                response = "<color=green>Kupiłeś Beret, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
-                                return true;
+                                result.Message = "<color=green>Kupiłeś Beret, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
                             }
                         }
                         else
                         {
-                            response = "<color=red>Nie stać cię na to!</color>";
-                            return false;
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
                         }
                     }
                     else if (arguments.At(1) == "Ser")
@@ -252,8 +269,9 @@ namespace MiniGamesSystem.Commands
                         {
                             if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Ser"))
                             {
-                                response = "<color=red>Masz już tę czapkę!</color>";
-                                return false;
+                                result.Message = "<color=red>Masz już tę czapkę!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
                             }
                             else
                             {
@@ -263,25 +281,29 @@ namespace MiniGamesSystem.Commands
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
-                                response = "<color=green>Kupiłeś Ser, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
-                                return true;
+                                result.Message = "<color=green>Kupiłeś Ser, wpisz .eq aby zobaczyć listę twoich czapek, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
                             }
                         }
                         else
                         {
-                            response = "<color=red>Nie stać cię na to!</color>";
-                            return false;
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
                         }
                     }
                     else
                     {
-                        response = "<color=red>Taki item nie istnieje, sprawdź czy wpisałeś nazwę itemu poprawnie!</color>";
-                        return false;
+                        result.Message = "<color=red>Taki item nie istnieje, sprawdź czy wpisałeś nazwę itemu poprawnie!</color>";
+                        result.State = CommandResultState.Error;
+                        return result;
                     }
                 }
             }
-            response = "";
-            return true;
+            result.Message = "";
+            result.State = CommandResultState.Ok;
+            return result;
         }
     }
 }

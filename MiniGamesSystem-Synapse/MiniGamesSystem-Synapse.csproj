@@ -40,11 +40,17 @@
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SynapseSL.2.7.0-pre-1.0\lib\net472\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="CommandSystem.Core">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\CommandSystem.Core.dll</HintPath>
+    </Reference>
     <Reference Include="LiteDB, Version=5.0.11.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
       <HintPath>..\packages\LiteDB.5.0.11\lib\net45\LiteDB.dll</HintPath>
     </Reference>
     <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SynapseSL.2.7.0-pre-1.0\lib\net472\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Synapse, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SynapseSL.2.7.0-pre-1.0\lib\net472\Synapse.dll</HintPath>
@@ -76,16 +82,15 @@
     <Compile Include="Commands\Ekwipunek.cs" />
     <Compile Include="Commands\Portfel.cs" />
     <Compile Include="Commands\Sklep.cs" />
-    <Compile Include="Commands\test.cs" />
     <Compile Include="Commands\Top.cs" />
     <Compile Include="Commands\Vote.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Handler.cs" />
     <Compile Include="Hats\HatInfo.cs" />
     <Compile Include="Hats\HatItemComponent.cs" />
     <Compile Include="Hats\HatPlayerComponent.cs" />
     <Compile Include="Hats\Hats.cs" />
+    <Compile Include="PluginConfig.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Handler.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="MiniGames.cs" />
     <Compile Include="PlayerInfo.cs" />

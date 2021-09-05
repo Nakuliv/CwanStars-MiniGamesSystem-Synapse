@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Exiled.API.Features;
+using Synapse.Api;
 using UnityEngine;
 
 namespace MiniGamesSystem
@@ -18,7 +18,7 @@ namespace MiniGamesSystem
 
         internal static bool IsPlayerNPC(Player p)
         {
-            return (bool)(IsNpc?.Invoke(null, new object[] { p }) ?? false) || p.Id == 9999 || p.IPAddress == "127.0.0.WAN";
+            return (bool)(IsNpc?.Invoke(null, new object[] { p }) ?? false) || p.PlayerId == 9999 || p.IpAddress == "127.0.0.WAN";
         }
     }
 }

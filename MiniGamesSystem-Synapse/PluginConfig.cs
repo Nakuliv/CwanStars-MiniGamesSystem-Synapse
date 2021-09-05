@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace MiniGamesSystem
 {
-    public class Config : IConfig
+    public class PluginConfig : IConfig
     {
         [Description("Use hints instead of broadcasts for text stuff:")]
         public bool UseHints { get; set; } = true;

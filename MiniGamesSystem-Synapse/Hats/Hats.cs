@@ -4,8 +4,7 @@
 // Licensed under the Apache v2 license.
 // </copyright>
 // -----------------------------------------------------------------------
-
-using Exiled.API.Features;
+using Synapse.Api;
 using UnityEngine;
 
 namespace MiniGamesSystem.Hats

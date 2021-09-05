@@ -1,6 +1,7 @@
 ﻿using MiniGamesSystem.Hats;
 using Synapse;
 using Synapse.Api;
+using Synapse.Api.Items;
 using UnityEngine;
 
 namespace MiniGamesSystem
@@ -80,20 +81,20 @@ namespace MiniGamesSystem
             if (!hat.Rotation.IsZero()) rot = hat.Rotation;
             if (hat.Scale != Vector3.one || hat.Position != Vector3.zero || !hat.Rotation.IsZero()) item = hat.Item;
 
-            var itemObj = new Item(Server.Host.Inventory.CreateItemInstance(item, false)) { Scale = scale };
+            var itemObj = new SynapseItem(item) { Scale = scale };
 
-            var pickup = itemObj.Spawn(Vector3.zero, Quaternion.identity);
+            //var pickup = itemObj.Spawn(Vector3.zero, Quaternion.identity);
 
-            SpawnHat(player, pickup, itemOffset, rot);
+            SpawnHat(player, itemObj, itemOffset, rot);
         }
 
-        public static void SpawnHat(Player player, Pickup pickup, Vector3 posOffset, Quaternion rotOffset)
+        public static void SpawnHat(Player player, SynapseItem pickup, Vector3 posOffset, Quaternion rotOffset)
         {
             HatPlayerComponent playerComponent;
 
-            if (!player.GameObject.TryGetComponent(out playerComponent))
+            if (!player.gameObject.TryGetComponent(out playerComponent))
             {
-                playerComponent = player.GameObject.AddComponent<HatPlayerComponent>();
+                playerComponent = player.gameObject.AddComponent<HatPlayerComponent>();
             }
 
             if (playerComponent.item != null)
@@ -102,14 +103,14 @@ namespace MiniGamesSystem
                 playerComponent.item = null;
             }
 
-            var rigidbody = pickup.Base.gameObject.GetComponent<Rigidbody>();
+            var rigidbody = pickup.PickupBase.gameObject.GetComponent<Rigidbody>();
             rigidbody.useGravity = false;
             rigidbody.isKinematic = true;
 
-            playerComponent.item = pickup.Base.gameObject.AddComponent<HatItemComponent>();
-            playerComponent.item.item = pickup.Base;
+            playerComponent.item = pickup.PickupBase.gameObject.AddComponent<HatItemComponent>();
+            playerComponent.item.item = pickup.PickupBase;
             playerComponent.item.player = playerComponent;
-            playerComponent.item.pos = Hats.Hats.GetHatPosForRole(player.Role);
+            playerComponent.item.pos = Hats.Hats.GetHatPosForRole(player.RoleType);
             playerComponent.item.itemOffset = posOffset;
             playerComponent.item.rot = rotOffset;
         }
