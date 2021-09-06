@@ -20,13 +20,10 @@ namespace MiniGamesSystem
     public class MiniGamesSystem : AbstractPlugin
     {
         public static GameObject workstationObj;
-        public static string DataPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED"), "Plugins"), "MiniGamesSystemData");
-        private static readonly Lazy<MiniGamesSystem> LazyInstance = new Lazy<MiniGamesSystem>(() => new MiniGamesSystem());
-        public static MiniGamesSystem Instance => LazyInstance.Value;
+        public static string DataPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Synapse"), "configs"), "MiniGamesSystemData");
 
         [Config(section = "MiniGamesSystem")]
         public static PluginConfig Config;
-        private MiniGamesSystem() { }
         private Handler handler;
 
         public override void Load()
