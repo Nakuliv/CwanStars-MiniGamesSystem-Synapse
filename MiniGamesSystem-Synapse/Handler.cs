@@ -163,13 +163,13 @@ namespace MiniGamesSystem
             }
         }
 
-        public void OnWarheadCancel(StoppingEventArgs ev)
+        /*public void OnWarheadCancel(StoppingEventArgs ev)
         {
             if (AktualnyEvent == "PeanutRun")
             {
                 ev.IsAllowed = false;
             }
-        }
+        }*/
 
         public void OnPlyDied(PlayerDeathEventArgs ev)
         {
@@ -201,7 +201,11 @@ namespace MiniGamesSystem
 
         public void OnRS()
         {
-            foreach (Player ply in Server.Get.Players)
+            if (AktualnyEvent == "PeanutRun")
+            {
+                Map.Get.Nuke.InsidePanel.Locked = true;
+            }
+                foreach (Player ply in Server.Get.Players)
             {
                 ply.GodMode = false;
                 ply.PlayerEffectsController.DisableEffect<CustomPlayerEffects.Scp207>();
@@ -276,9 +280,9 @@ namespace MiniGamesSystem
         {
             if (AktualnyEvent == "PeanutRun")
             {
-                if (Player.Get(RoleType.Scp173).Count() > 1)
+                if (Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp173).Count() > 1)
                 {
-                    foreach (Player ply in Player.Get(RoleType.Scp173))
+                    foreach (Player ply in Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp173))
                     {
                         if (pInfoDict.ContainsKey(ply.UserId))
                         {
@@ -291,9 +295,9 @@ namespace MiniGamesSystem
                         Map.Get.SendBroadcast(5, $"{ply.NickName} wygrali!");
                     }
                 }
-                if (Player.Get(RoleType.Scp173).Count() == 1)
+                if (Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp173).Count() == 1)
                 {
-                    foreach (Player ply in Player.Get(RoleType.Scp173))
+                    foreach (Player ply in Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp173))
                     {
                         if (pInfoDict.ContainsKey(ply.UserId))
                         {
@@ -309,7 +313,7 @@ namespace MiniGamesSystem
             }
             else if (AktualnyEvent == "deathMatch")
             {
-                foreach (Player ply in Player.Get(RoleType.ClassD))
+                foreach (Player ply in Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD))
                 {
                     if (pInfoDict.ContainsKey(ply.UserId))
                     {
@@ -322,8 +326,8 @@ namespace MiniGamesSystem
             }
             else if (AktualnyEvent == "WojnaGangow")
             {
-                var team1 = Player.Get(RoleType.ClassD);
-                var team2 = Player.Get(RoleType.Scientist);
+                var team1 = Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD);
+                var team2 = Server.Get.GetPlayers(x => x.RoleType == RoleType.Scientist);
                 if (team1.Count() == 0 && team2.Count() > 0)
                 {
                     foreach (Player ply in team2)
@@ -358,7 +362,7 @@ namespace MiniGamesSystem
             }
             else if (AktualnyEvent == "DodgeBall")
             {
-                foreach (Player ply in Player.Get(RoleType.ClassD))
+                foreach (Player ply in Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD))
                 {
                     if (pInfoDict.ContainsKey(ply.UserId))
                     {

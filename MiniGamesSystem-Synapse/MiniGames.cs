@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Exiled.API.Enums;
-
-using Exiled.API.Features;
 using MEC;
 using UnityEngine;
-using Exiled.API.Features.Items;
 using Synapse.Api.Enum;
 using Synapse.Api;
 using Synapse;
+using MapGeneration;
+using GameCore;
 
 namespace MiniGamesSystem
 {
@@ -56,7 +54,8 @@ namespace MiniGamesSystem
             });
             Timing.CallDelayed(30, () =>
             {
-                Map.ShowHint("Otrzymałeś broń i leczenie, sprawdź ekwipunek!", 5);
+                foreach (var ply in Server.Get.Players)
+                    ply.GiveTextHint("Otrzymałeś broń i leczenie, sprawdź ekwipunek!", 5);
                 foreach (Player player in Server.Get.Players)
                 {
                     if (player.RoleType == RoleType.ClassD)
@@ -96,11 +95,11 @@ namespace MiniGamesSystem
         {
             while (true)
             {
-                if (Player.Get(RoleType.ClassD).Count() == 1)
+                if (Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD).Count() == 1)
                 {
-                    if (Round.ElapsedTime.Seconds > 1)
+                    if (RoundStart.RoundLength.Seconds > 1)
                     {
-                        foreach (Player ply in Player.Get(RoleType.ClassD))
+                        foreach (Player ply in Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD))
                         {
                             Map.Get.SendBroadcast(5, $"<b><color=green>{ply.NickName}</color> wygrał!</b>");
                             Round.Get.RoundLock = false;
@@ -122,7 +121,7 @@ namespace MiniGamesSystem
             List<Player> players = Server.Get.Players.ToList();
             for (int i = 0; i < players.Count / 2; i++)
             {
-                UnityEngine.Vector3 location3 = Map.Get.Rooms.First(x => x.RoomType == RoomType.EzCollapsedTunnel).Position;
+                UnityEngine.Vector3 location3 = Map.Get.Rooms.First(x => x.RoomType == RoomName.EzCollapsedTunnel).Position;
                 location3.y = location3.y + 1;
 
                 team1.Add(players[i].UserId);
@@ -138,10 +137,10 @@ namespace MiniGamesSystem
             }
             foreach (Player player in players)
             {
-                UnityEngine.Vector3 location3 = Map.Get.Rooms.First(x => x.RoomType == RoomType.EzDownstairsPcs).Position;
+                UnityEngine.Vector3 location3 = Map.Get.Rooms.First(x => x.RoomType == RoomName.EzOfficeLarge).Position;
                 location3.y = location3.y + 1;
 
-                UnityEngine.Vector3 location2 = Map.Get.Rooms.First(x => x.RoomType == RoomType.EzConference).Position;
+                UnityEngine.Vector3 location2 = Map.Get.Rooms.First(x => x.RoomType == RoomName.EzOfficeStoried).Position;
                 location2.y = location2.y + 1;
 
                 Timing.CallDelayed(0.1f, () =>
@@ -156,9 +155,9 @@ namespace MiniGamesSystem
                 {
                     if (!team1.Contains(player.UserId))
                     {
-                        player.Ammo[ItemType.Ammo9x19] = 200;
-                        player.Ammo[ItemType.Ammo44cal] = 200;
-                        player.Ammo[ItemType.Ammo12gauge] = 200;
+                        player.AmmoBox[AmmoType.Ammo9x19] = 200;
+                        player.AmmoBox[AmmoType.Ammo44cal] = 200;
+                        player.AmmoBox[AmmoType.Ammo12gauge] = 200;
                         player.Inventory.AddItem(ItemType.GunCOM15);
                         player.Inventory.AddItem(ItemType.Medkit);
                         player.Inventory.AddItem(ItemType.SCP500);
@@ -166,9 +165,9 @@ namespace MiniGamesSystem
                     }
                     else
                     {
-                        player.Ammo[ItemType.Ammo9x19] = 200;
-                        player.Ammo[ItemType.Ammo44cal] = 200;
-                        player.Ammo[ItemType.Ammo12gauge] = 200;
+                        player.AmmoBox[AmmoType.Ammo9x19] = 200;
+                        player.AmmoBox[AmmoType.Ammo44cal] = 200;
+                        player.AmmoBox[AmmoType.Ammo12gauge] = 200;
                         player.Inventory.AddItem(ItemType.GunCOM15);
                         player.Inventory.AddItem(ItemType.Medkit);
                         player.Inventory.AddItem(ItemType.SCP500);
@@ -245,9 +244,9 @@ namespace MiniGamesSystem
 
                 Timing.CallDelayed(900, () =>
             {
-                    if (Player.Get(RoleType.ClassD).Count() > 0)
+                    if (Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD).Count() > 0)
                     {
-                        foreach (Player ply in Player.Get(RoleType.ClassD))
+                        foreach (Player ply in Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD))
                         {
                             if (pInfoDict.ContainsKey(ply.UserId))
                             {
@@ -257,15 +256,15 @@ namespace MiniGamesSystem
                                 pInfoDict[ply.UserId] = info;
                             }
                         }
-                        foreach (Player scps in Player.Get(RoleType.Scp93953))
+                        foreach (Player scps in Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp93953))
                         {
                             scps.Kill();
                         }
                         Map.Get.SendBroadcast(5, "<b><color=orange>Klasa-D</color> wygrała!</b>");
                     }
-                    else if (Player.Get(RoleType.Scp93953).Count() > 0)
+                    else if (Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp93953).Count() > 0)
                     {
-                        foreach (Player ply in Player.Get(RoleType.Scp93953))
+                        foreach (Player ply in Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp93953))
                         {
                             if (pInfoDict.ContainsKey(ply.UserId))
                             {
@@ -285,11 +284,11 @@ namespace MiniGamesSystem
         {
             while (true)
             {
-                if(Round.ElapsedTime.Seconds > 5)
+                if(RoundStart.RoundLength.Seconds > 5)
                 {
-                    if (Player.Get(RoleType.ClassD).Count() > 0 && Player.Get(RoleType.Scp93953).Count() == 0)
+                    if (Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD).Count() > 0 && Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp93953).Count() == 0)
                     {
-                        foreach (Player ply in Player.List)
+                        foreach (Player ply in Server.Get.Players)
                         {
                             if (ply.RoleType == RoleType.ClassD)
                             {
@@ -309,9 +308,9 @@ namespace MiniGamesSystem
                         Map.Get.SendBroadcast(5, "<b><color=orange>Klasa-D</color> wygrała!</b>");
                         Timing.KillCoroutines("hascheck");
                     }
-                    else if (Player.Get(RoleType.Scp93953).Count() > 0 && Player.Get(RoleType.ClassD).Count() == 0)
+                    else if (Server.Get.GetPlayers(x => x.RoleType == RoleType.Scp93953).Count() > 0 && Server.Get.GetPlayers(x => x.RoleType == RoleType.ClassD).Count() == 0)
                     {
-                        foreach (Player ply in Player.List)
+                        foreach (Player ply in Server.Get.Players)
                         {
                             if (ply.RoleType == RoleType.Scp93953)
                             {
@@ -352,10 +351,10 @@ namespace MiniGamesSystem
                 Timing.CallDelayed(0.1f, () =>
                 {
                     player.Inventory.AddItem(ItemType.GunCOM18);
-                    player.Ammo[ItemType.Ammo9x19] = 200;
-                    player.Ammo[ItemType.Ammo44cal] = 200;
-                    player.Ammo[ItemType.Ammo12gauge] = 200;
-                    player.Position = Map.Get.Rooms.First(x => x.RoomType == RoomType.LczCafe).Position;
+                    player.AmmoBox[AmmoType.Ammo9x19] = 200;
+                    player.AmmoBox[AmmoType.Ammo44cal] = 200;
+                    player.AmmoBox[AmmoType.Ammo12gauge] = 200;
+                    player.Position = Map.Get.Rooms.First(x => x.RoomType == RoomName.LczComputerRoom).Position;
                 });
             }
         }
@@ -414,7 +413,7 @@ namespace MiniGamesSystem
 
                 foreach (Player player in Server.Get.Players)
                     if (rnd.Next(100) >= 50)
-                        new ExplosiveGrenade(ItemType.SCP018).SpawnActive(player.Position, player);
+                        Map.Get.SpawnGrenade(player.Position, Vector3.zero, 3, GrenadeType.Scp018, player);
 
                 yield return Timing.WaitForSeconds(5.5f);
             }

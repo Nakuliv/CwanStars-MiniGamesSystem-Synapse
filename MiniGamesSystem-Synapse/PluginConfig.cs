@@ -1,9 +1,9 @@
-﻿using Exiled.API.Interfaces;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Synapse.Config;
 
 namespace MiniGamesSystem
 {
-    public class PluginConfig : IConfig
+    public class PluginConfig : IConfigSection
     {
         [Description("Use hints instead of broadcasts for text stuff:")]
         public bool UseHints { get; set; } = true;

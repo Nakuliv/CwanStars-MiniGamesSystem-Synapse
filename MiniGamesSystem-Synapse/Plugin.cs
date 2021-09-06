@@ -1,9 +1,5 @@
 ﻿using System;
-using Exiled.API.Features;
 using sc = SynapseController;
-using PlayerEv = Exiled.Events.Handlers.Player;
-using MapEv = Exiled.Events.Handlers.Map;
-using WarheadEv = Exiled.Events.Handlers.Warhead;
 using UnityEngine;
 using System.IO;
 using Synapse.Api.Plugin;
@@ -41,36 +37,16 @@ namespace MiniGamesSystem
             if (!Directory.Exists(DataPath)) Directory.CreateDirectory(DataPath);
 
             sc.Server.Events.Map.WarheadDetonationEvent += handler.OnWarheadDetonated;
-            WarheadEv.Detonated += handler.OnWarheadDetonated;
-            MapEv.SpawningItem += handler.OnSpawningItems;
-            ServerEv.WaitingForPlayers += handler.OnWTP;
-            PlayerEv.Verified += handler.OnJoin;
-            ServerEv.RoundStarted += handler.OnRS;
-            PlayerEv.PickingUpItem += handler.OnPickingUp;
-            ServerEv.RestartingRound += handler.OnRoundRestart;
-            PlayerEv.Shooting += handler.OnShooting;
-            ServerEv.EndingRound += handler.OnRndEnd;
-            ServerEv.RespawningTeam += handler.OnRespawning;
-            WarheadEv.Stopping += handler.OnWarheadCancel;
-            PlayerEv.Died += handler.OnPlyDied;
-        }
-
-        public override void OnDisabled()
-        {
-            base.OnDisabled();
-            WarheadEv.Detonated -= handler.OnWarheadDetonated;
-            MapEv.SpawningItem -= handler.OnSpawningItems;
-            ServerEv.WaitingForPlayers -= handler.OnWTP;
-            PlayerEv.Verified -= handler.OnJoin;
-            ServerEv.RoundStarted -= handler.OnRS;
-            PlayerEv.PickingUpItem -= handler.OnPickingUp;
-            ServerEv.RestartingRound -= handler.OnRoundRestart;
-            PlayerEv.Shooting -= handler.OnShooting;
-            ServerEv.EndingRound -= handler.OnRndEnd;
-            ServerEv.RespawningTeam -= handler.OnRespawning;
-            WarheadEv.Stopping -= handler.OnWarheadCancel;
-            PlayerEv.Died -= handler.OnPlyDied;
-            handler = null;
+            sc.Server.Events.Map.WarheadDetonationEvent += handler.OnWarheadDetonated;
+            sc.Server.Events.Round.WaitingForPlayersEvent += handler.OnWTP;
+            sc.Server.Events.Player.PlayerJoinEvent += handler.OnJoin;
+            sc.Server.Events.Round.RoundStartEvent += handler.OnRS;
+            sc.Server.Events.Player.PlayerPickUpItemEvent += handler.OnPickingUp;
+            sc.Server.Events.Round.RoundRestartEvent += handler.OnRoundRestart;
+            sc.Server.Events.Player.PlayerShootEvent += handler.OnShooting;
+            sc.Server.Events.Round.RoundEndEvent += handler.OnRndEnd;
+            sc.Server.Events.Round.TeamRespawnEvent += handler.OnRespawning;
+            sc.Server.Events.Player.PlayerDeathEvent += handler.OnPlyDied;
         }
 
         public enum ObjectType
