@@ -359,11 +359,11 @@ namespace MiniGamesSystem
             }
         }
         //PeanutRun
-        public static void PeanutRunn()
+        public static void WarheadRunn()
         {
             AlphaWarheadController.Host.StartDetonation();
                 foreach (Player player in Server.Get.Players)
-                    player.RoleType = RoleType.Scp173;
+                    player.RoleType = RoleType.ClassD;
 
             Round.Get.RoundLock = true;
         }

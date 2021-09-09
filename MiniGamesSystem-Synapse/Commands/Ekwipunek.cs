@@ -5,6 +5,7 @@ using RemoteAdmin;
 using Synapse;
 using Synapse.Api;
 using Synapse.Command;
+using UnityEngine;
 
 namespace MiniGamesSystem.Commands
 {
@@ -18,6 +19,7 @@ namespace MiniGamesSystem.Commands
 
     public class Ekwipunek : ISynapseCommand
     {
+        private Dummy _dummy;
         public string listaczapek(Player ply)
         {
             return string.Join("\n", Handler.pInfoDict[ply.UserId].ListaCzapek);
@@ -83,7 +85,7 @@ namespace MiniGamesSystem.Commands
                     {
                         if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                            ply.SpawnHat(new HatInfo(ItemType.SCP018, new UnityEngine.Vector3(1, 1, 1), ply.Position));
+                            ply.SpawnHat(new HatInfo(ItemType.SCP018));
                             return new CommandResult
                             {
                                 Message = "<color=green>Założyłeś czapkę!</color>",
@@ -106,7 +108,7 @@ namespace MiniGamesSystem.Commands
                     {
                         if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                            ply.SpawnHat(new HatInfo(ItemType.SCP207, new UnityEngine.Vector3(1, 1, 1), ply.Position));
+                            ply.SpawnHat(new HatInfo(ItemType.SCP207));
                             return new CommandResult
                             {
                                 Message = "<color=green>Założyłeś czapkę!</color>",
@@ -129,7 +131,7 @@ namespace MiniGamesSystem.Commands
                     {
                         if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                            ply.SpawnHat(new HatInfo(ItemType.SCP268, new UnityEngine.Vector3(1, 1, 1), ply.Position));
+                            ply.SpawnHat(new HatInfo(ItemType.SCP268));
                             return new CommandResult
                             {
                                 Message = "<color=green>Założyłeś czapkę!</color>",
@@ -152,10 +154,33 @@ namespace MiniGamesSystem.Commands
                     {
                         if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                            ply.SpawnHat(new HatInfo(ItemType.KeycardScientist, new UnityEngine.Vector3(2, 3, 2), ply.Position));
+                            ply.SpawnHat(new HatInfo(ItemType.KeycardScientist, new UnityEngine.Vector3(2, 3, 2)));
                             return new CommandResult
                             {
                                 Message = "<color=green>Założyłeś czapkę!</color>",
+                                State = CommandResultState.Ok
+                            };
+                        }
+                    }
+                    else
+                    {
+                        return new CommandResult
+                        {
+                            Message = "<color=red>Nie masz takiej czapki w ekwipunku!</color>",
+                            State = CommandResultState.Error
+                        };
+                    }
+                }
+                else if (arguments.At(1) == "Amogus")
+                {
+                    if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Amogus"))
+                    {
+                        if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
+                        {
+                            _dummy = new Dummy(ply.Position, new Quaternion(), RoleType.Tutorial);
+                            return new CommandResult
+                            {
+                                Message = "<color=green>Test Pet!</color>",
                                 State = CommandResultState.Ok
                             };
                         }

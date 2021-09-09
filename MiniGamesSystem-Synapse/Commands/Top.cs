@@ -28,7 +28,7 @@ Usage = "top"
             if (arguments.Count > 0 && int.TryParse(arguments.At(0), out int n)) num = n;
             if (num > 15)
             {
-                result.Message = "<color=red>Leaderboards can be no larger than 15.</color>";
+                result.Message = "<color=red>Top nie może zawierać więcej niż 15 graczy.</color>";
                 result.State = CommandResultState.Error;
                 return result;
             }
