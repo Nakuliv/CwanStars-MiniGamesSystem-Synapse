@@ -5,6 +5,8 @@ namespace MiniGamesSystem
 {
     public class PluginConfig : IConfigSection
     {
+        [Description("Pets stuff")]
+        public int MaxPets { get; set; } = 2;
         [Description("Use hints instead of broadcasts for text stuff:")]
         public bool UseHints { get; set; } = true;
 

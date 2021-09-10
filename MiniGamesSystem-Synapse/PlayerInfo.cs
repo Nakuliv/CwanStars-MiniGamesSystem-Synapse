@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MiniGamesSystem.Pets;
 
 namespace MiniGamesSystem
 {
@@ -7,6 +8,7 @@ namespace MiniGamesSystem
 		public string nick;
 		public int Coins;
 		public List<string> ListaCzapek = new List<string>();
+		public List<PetType> ListaPetow = new List<PetType>();
 
 		public PlayerInfo(string nick)
 		{

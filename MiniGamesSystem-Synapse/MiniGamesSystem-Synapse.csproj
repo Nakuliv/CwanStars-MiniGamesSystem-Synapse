@@ -90,6 +90,9 @@
     <Compile Include="Hats\HatItemComponent.cs" />
     <Compile Include="Hats\HatPlayerComponent.cs" />
     <Compile Include="Hats\Hats.cs" />
+    <Compile Include="Pets\PetOwnerScript.cs" />
+    <Compile Include="Pets\Pets.cs" />
+    <Compile Include="Pets\PetType.cs" />
     <Compile Include="PluginConfig.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Handler.cs" />

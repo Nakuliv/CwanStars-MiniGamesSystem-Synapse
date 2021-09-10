@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using CommandSystem;
+using MiniGamesSystem.Pets;
 using Newtonsoft.Json;
 using RemoteAdmin;
 using Synapse;
@@ -57,7 +58,7 @@ namespace MiniGamesSystem.Commands
                         if (Handler.pInfoDict[ply.UserId].Coins > 449)
                         {
 
-                            if (Handler.pInfoDict[ply.UserId].ListaCzapek.Contains("Amogus"))
+                            if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.amogus))
                             {
                                 result.Message = "<color=red>Masz już tego peta!</color>";
                                 result.State = CommandResultState.Error;
@@ -66,7 +67,7 @@ namespace MiniGamesSystem.Commands
                             else
                             {
                                 Handler.pInfoDict[ply.UserId].Coins = (Handler.pInfoDict[ply.UserId].Coins - 450);
-                                Handler.pInfoDict[ply.UserId].ListaCzapek.Add("Amogus");
+                                Handler.pInfoDict[ply.UserId].ListaPetow.Add(PetType.amogus);
                                 foreach (KeyValuePair<string, PlayerInfo> info in Handler.pInfoDict)
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));

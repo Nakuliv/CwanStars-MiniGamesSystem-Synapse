@@ -1,4 +1,7 @@
-﻿using MiniGamesSystem.Hats;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MiniGamesSystem.Hats;
+using MiniGamesSystem.Pets;
 using Synapse;
 using Synapse.Api;
 using Synapse.Api.Items;
@@ -28,6 +31,7 @@ namespace MiniGamesSystem
 
             return randomPosition == null ? Vector3.zero : randomPosition.transform.position;
         }
+        public static PetOwnerScript GetPetOwnerScript(this Player player) => player.GetComponent<PetOwnerScript>();
 
         public static void SpawnHat(Player player, HatInfo hat)
         {
