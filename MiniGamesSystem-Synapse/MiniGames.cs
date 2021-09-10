@@ -362,8 +362,11 @@ namespace MiniGamesSystem
         public static void WarheadRunn()
         {
             AlphaWarheadController.Host.StartDetonation();
-                foreach (Player player in Server.Get.Players)
-                    player.RoleType = RoleType.ClassD;
+            foreach (Player player in Server.Get.Players)
+            {
+                player.RoleType = RoleType.ClassD;
+                player.GiveEffect(Effect.Scp207, 3);
+            }
 
             Round.Get.RoundLock = true;
         }

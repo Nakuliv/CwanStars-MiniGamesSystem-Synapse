@@ -72,7 +72,7 @@ Usage = "vote [id eventu]"
                         }
                         else if (vote.Contains($"PE{ply.UserId}"))
                         {
-                            Handler.peanutRun--;
+                            Handler.WarheadRun--;
                             Handler.Deathmatch++;
                             vote.Remove($"PE{ply.UserId}");
                             vote.Add($"DM{ply.UserId}");
@@ -111,7 +111,7 @@ Usage = "vote [id eventu]"
                         }
                         else if (vote.Contains($"PE{ply.UserId}"))
                         {
-                            Handler.peanutRun--;
+                            Handler.WarheadRun--;
                             Handler.GangWar++;
                             vote.Remove($"PE{ply.UserId}");
                             vote.Add($"GW{ply.UserId}");
@@ -184,7 +184,7 @@ Usage = "vote [id eventu]"
                         }
                         else if (vote.Contains($"PE{ply.UserId}"))
                         {
-                            Handler.peanutRun--;
+                            Handler.WarheadRun--;
                             Handler.hideAndSeek++;
                             vote.Remove($"PE{ply.UserId}");
                             vote.Add($"HAS{ply.UserId}");
@@ -214,7 +214,7 @@ Usage = "vote [id eventu]"
                         if (vote.Contains($"DM{ply.UserId}"))
                         {
                             Handler.Deathmatch--;
-                            Handler.peanutRun++;
+                            Handler.WarheadRun++;
                             vote.Remove($"DM{ply.UserId}");
                             vote.Add($"PE{ply.UserId}");
                             result.Message = "Pomyślnie zmieniono głos na PeanutRun!";
@@ -223,7 +223,7 @@ Usage = "vote [id eventu]"
                         else if (vote.Contains($"HAS{ply.UserId}"))
                         {
                             Handler.hideAndSeek--;
-                            Handler.peanutRun++;
+                            Handler.WarheadRun++;
                             vote.Remove($"HAS{ply.UserId}");
                             vote.Add($"PE{ply.UserId}");
                             result.Message = "Pomyślnie zmieniono głos na PeanutRun!";
@@ -232,7 +232,7 @@ Usage = "vote [id eventu]"
                         else if (vote.Contains($"DG{ply.UserId}"))
                         {
                             Handler.dgball--;
-                            Handler.peanutRun++;
+                            Handler.WarheadRun++;
                             vote.Remove($"DG{ply.UserId}");
                             vote.Add($"PE{ply.UserId}");
                             result.Message = "Pomyślnie zmieniono głos na PeanutRun!";
@@ -241,7 +241,7 @@ Usage = "vote [id eventu]"
                         else if (vote.Contains($"GW{ply.UserId}"))
                         {
                             Handler.GangWar--;
-                            Handler.peanutRun++;
+                            Handler.WarheadRun++;
                             vote.Remove($"GW{ply.UserId}");
                             vote.Add($"PE{ply.UserId}");
                             result.Message = "Pomyślnie zmieniono głos na PeanutRun!";
@@ -249,7 +249,7 @@ Usage = "vote [id eventu]"
                         }
                         else if (!Round.Get.RoundIsActive && !vote.Contains($"PE{ply.UserId}"))
                         {
-                            Handler.peanutRun++;
+                            Handler.WarheadRun++;
                             vote.Add($"PE{ply.UserId}");
                             result.Message = "Pomyślnie zagłosowano na PeanutRun!";
                             return result;
@@ -278,7 +278,7 @@ Usage = "vote [id eventu]"
                         }
                         else if (vote.Contains($"PE{ply.UserId}"))
                         {
-                            Handler.peanutRun--;
+                            Handler.WarheadRun--;
                             Handler.dgball++;
                             vote.Remove($"PE{ply.UserId}");
                             vote.Add($"DG{ply.UserId}");

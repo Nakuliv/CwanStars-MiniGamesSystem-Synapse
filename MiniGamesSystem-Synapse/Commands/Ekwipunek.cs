@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CommandSystem;
+using MEC;
 using MiniGamesSystem.Hats;
 using RemoteAdmin;
 using Synapse;
@@ -177,7 +179,10 @@ namespace MiniGamesSystem.Commands
                     {
                         if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                            _dummy = new Dummy(ply.Position, new Quaternion(), RoleType.Tutorial);
+                            _dummy = new Dummy(ply.Position, new Quaternion(), RoleType.Scp096, "Amogus", $"Pet", "yellow");
+                            _dummy.GameObject.GetComponent<NicknameSync>().Network_customPlayerInfoString = $"Właściciel: <color=green>{ply.NickName}</color>";
+                            _dummy.Scale = new Vector3(0.5f, 0.5f, 0.5f);
+                            Timing.RunCoroutine(Walk(ply), "petco");
                             return new CommandResult
                             {
                                 Message = "<color=green>Test Pet!</color>",
@@ -222,6 +227,43 @@ namespace MiniGamesSystem.Commands
                 Message = "",
                 State = CommandResultState.Ok
             };
+        }
+        private IEnumerator<float> Walk(Player Owner)
+        {
+            for (; ; )
+            {
+                yield return Timing.WaitForSeconds(0.1f);
+
+                if (Owner == null) _dummy.Destroy();
+                if (_dummy.GameObject == null) yield break;
+                _dummy.RotateToPosition(Owner.Position);
+
+                var distance = Vector3.Distance(Owner.Position, _dummy.Position);
+
+                if ((PlayerMovementState)Owner.AnimationController.Network_curMoveState == PlayerMovementState.Sneaking) _dummy.Movement = PlayerMovementState.Sneaking;
+                else _dummy.Movement = PlayerMovementState.Sprinting;
+
+                if (_dummy.Movement == PlayerMovementState.Sneaking)
+                {
+                    if (distance > 5f) _dummy.Position = Owner.Position;
+
+                    else if (distance > 1f) _dummy.Direction = Synapse.Api.Enum.MovementDirection.Forward;
+
+                    else if (distance <= 1f) _dummy.Direction = Synapse.Api.Enum.MovementDirection.Stop;
+
+                    continue;
+                }
+
+                if (distance > 10f)
+                    _dummy.Position = Owner.Position;
+
+                else if (distance > 2f)
+                    _dummy.Direction = Synapse.Api.Enum.MovementDirection.Forward;
+
+                else if (distance <= 1.25f)
+                    _dummy.Direction = Synapse.Api.Enum.MovementDirection.Stop;
+
+            }
         }
     }
 }

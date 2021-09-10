@@ -394,6 +394,7 @@ namespace MiniGamesSystem
             Timing.KillCoroutines("dmcheck");
             Timing.KillCoroutines("hascheck");
             Timing.KillCoroutines("dgballLoop");
+            Timing.KillCoroutines("petco");
             Timing.KillCoroutines();
             MiniGames.team1.Clear();
 

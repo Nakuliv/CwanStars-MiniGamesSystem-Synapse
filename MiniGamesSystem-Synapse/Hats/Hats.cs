@@ -4,6 +4,7 @@
 // Licensed under the Apache v2 license.
 // </copyright>
 // -----------------------------------------------------------------------
+
 using Synapse.Api;
 using UnityEngine;
 
