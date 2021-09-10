@@ -179,8 +179,8 @@ namespace MiniGamesSystem.Commands
                     {
                         if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                            _dummy = new Dummy(ply.Position, new Quaternion(), RoleType.Scp096, "Amogus", $"Pet", "yellow");
-                            _dummy.GameObject.GetComponent<NicknameSync>().Network_customPlayerInfoString = $"Właściciel: <color=green>{ply.NickName}</color>";
+                            _dummy = new Dummy(ply.Position, new Quaternion(), RoleType.Scp93989, "Amogus", $"Pet", "yellow");
+                            _dummy.GameObject.GetComponent<NicknameSync>().Network_customPlayerInfoString = $"<color=white>[</color><color=blue>Nazwa</color><color=white>]</color> SCP-939\n<color=white>[</color><color=#ff7518>Właściciel</color><color=white>]</color> <color=green>{ply.NickName}</color>\n<color=white>[</color><color=#EFC01A>INFO</color><color=white>]</color> ";
                             _dummy.Scale = new Vector3(0.5f, 0.5f, 0.5f);
                             Timing.RunCoroutine(Walk(ply), "petco");
                             return new CommandResult
@@ -210,17 +210,30 @@ namespace MiniGamesSystem.Commands
             }
             else if (arguments.At(0) == "odloz")
             {
-                HatPlayerComponent playerComponent;
-                if (!ply.gameObject.TryGetComponent(out playerComponent))
+                if (arguments.At(1) == null)
                 {
-                    playerComponent = ply.gameObject.AddComponent<HatPlayerComponent>();
+                    HatPlayerComponent playerComponent;
+                    if (!ply.gameObject.TryGetComponent(out playerComponent))
+                    {
+                        playerComponent = ply.gameObject.AddComponent<HatPlayerComponent>();
+                    }
+                    RemoveHat(playerComponent);
+
+                    return new CommandResult
+                    {
+                        Message = "<color=green>Odłożyłeś czapkę!</color>",
+                        State = CommandResultState.Ok
+                    };
                 }
-                RemoveHat(playerComponent);
-                return new CommandResult
+                else if (arguments.At(1) == "pet")
                 {
-                    Message = "<color=green>Odłożyłeś czapkę!</color>",
-                    State = CommandResultState.Ok
-                };
+                    _dummy.Destroy();
+                    return new CommandResult
+                    {
+                        Message = "<color=green>Odłożyłeś czapkę!</color>",
+                        State = CommandResultState.Ok
+                    };
+                }
             }
             return new CommandResult
             {
