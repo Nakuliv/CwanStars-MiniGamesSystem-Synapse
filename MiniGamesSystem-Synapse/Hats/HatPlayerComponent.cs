@@ -43,7 +43,7 @@ namespace MiniGamesSystem.Hats
                     var pickupInfo = pickup.NetworkInfo;
                     var pickupType = pickup.GetType();
 
-                    if (player.RoleType == RoleType.None || player.RoleType == RoleType.Spectator || Helper.IsPlayerGhost(player) || (!player.Invisible))
+                    if (player.RoleType == RoleType.None || player.RoleType == RoleType.Spectator || Helper.IsPlayerGhost(player))
                     {
                         pickupInfo.Position = Vector3.one * 6000f;
                         pickup.transform.position = Vector3.one * 6000f;
@@ -76,23 +76,8 @@ namespace MiniGamesSystem.Hats
 
                     foreach (var player1 in Server.Get.Players)
                     {
-                        if (player1?.UserId == null || player1.GetComponent<ReferenceHub>().characterClassManager.IsHost || !player1.GetComponent<ReferenceHub>().characterClassManager.IsVerified || Helper.IsPlayerNPC(player1)) continue;
-                        
-                        if (player1.Team == player.Team || player1 == player)
-                        {
-                            //MirrorExtensions.SendFakeSyncVar(player1, pickup.netIdentity, pickupType, "NetworkInfo", pickupInfo);
-                        }
-                        else
-                            switch (player1.RoleType)
-                            {
-                                case RoleType.Scp93953:
-                                case RoleType.Scp93989:
-                                {
-                                        //MirrorExtensions.SendFakeSyncVar(player1, pickup.netIdentity, pickupType, "NetworkInfo", fakePickupInfo);
-
-                                    break;
-                                }
-                            }
+                        if (player1?.UserId == null || player1.ClassManager.IsHost || !player1.ClassManager.IsVerified || Helper.IsPlayerNPC(player1)) continue;
+                      
                     }
                 }
                 catch (Exception e)
