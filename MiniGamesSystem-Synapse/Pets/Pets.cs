@@ -14,6 +14,14 @@ namespace MiniGamesSystem.Pets
         [API]
         public static bool SpawnPet(Player owner, string Nick, PetType type, out Pet pet)
         {
+            pet = null;
+            PetOwnerScript pos;
+            if (!owner.TryGetComponent(out pos))
+            {
+                owner.gameObject.AddComponent<PetOwnerScript>();
+            }
+            if (owner.GetPetOwnerScript().SpawnedPets.Contains(type)) return false;
+
             pet = new Pet(owner, Nick, type);
 
             return true;
@@ -26,6 +34,7 @@ namespace MiniGamesSystem.Pets
         public Pet(Player player, string Nick, PetType Type) :
             base(player.Position, player.transform.localRotation)
         {
+            player.GetPetOwnerScript().SpawnedPets.Add(Type);
             switch (Type)
             {
                 case PetType.amogus:
