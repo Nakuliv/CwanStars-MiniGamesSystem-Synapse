@@ -24,8 +24,6 @@ namespace MiniGamesSystem.Commands
             var ply = Server.Get.GetPlayer(context.Player.PlayerId);
             if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.custom))
             {
-                if (arguments.At(0) == null)
-                {
                     result.Message =
                 "\n=================== CUSTOM PET MENU <color=#EFC01A>(BARDZO WCZESNA BETA)</color> ===================\n" +
                 "<color=#EFC01A>Dostępne Komendy:</color>\n" +
@@ -41,8 +39,9 @@ namespace MiniGamesSystem.Commands
                 "Rozmiar\n";
                     result.State = CommandResultState.Ok;
                     return result;
-                }
             }
+            result.Message = "some error";
+            result.State = CommandResultState.Error;
             return result;
         }
     }
