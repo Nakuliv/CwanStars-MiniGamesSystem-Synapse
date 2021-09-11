@@ -49,9 +49,10 @@ namespace MiniGamesSystem.Pets
                     Player.RankName = "Pet";
                     Player.RankColor = "yellow";
                     break;
-                case PetType.custom:
-                    Player.ClassManager.CurClass = RoleType.Tutorial;
-                    Player.Scale = new Vector3(1f, 1f, 1f);
+                case PetType.Custom:
+                    Player.ClassManager.CurClass = Handler.pInfoDict[Owner.UserId].custompetClass;
+                    Player.Scale = Handler.pInfoDict[Owner.UserId].custompetSize;
+                    Player.ItemInHand = new SynapseItem(Handler.pInfoDict[Owner.UserId].custompetItem);
                     Player.RankName = "Custom Pet";
                     Player.RankColor = "yellow";
                     break;

@@ -41,6 +41,7 @@ namespace MiniGamesSystem.Commands
                     "<color=#EFC01A>Pety (BETA):</color>\n" +
                     "Amogus - <color=yellow>450</color> coinów\n" +
                     "Doggo - <color=yellow>450</color> coinów\n"+
+                    "(<color=#EFC01A>NOWOŚĆ!</color)Custom - <color=yellow>20000</color>\n"+
                     "---------------------------\n" +
                     "<color=#EFC01A>Rangi:</color>\n" +
                     "VIP na miesiąc - <color=yellow>10000</color> Coinów\n" +
@@ -105,6 +106,37 @@ namespace MiniGamesSystem.Commands
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
                                 result.Message = "<color=green>Kupiłeś Doggo, wpisz .eq aby zobaczyć listę twoich czapek i petów, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
+                            }
+                        }
+                        else
+                        {
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
+                        }
+                    }
+                    else if (arguments.At(1) == "Custom")
+                    {
+                        if (Handler.pInfoDict[ply.UserId].Coins > 19999)
+                        {
+
+                            if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.Custom))
+                            {
+                                result.Message = "<color=red>Masz już tego peta!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
+                            }
+                            else
+                            {
+                                Handler.pInfoDict[ply.UserId].Coins = (Handler.pInfoDict[ply.UserId].Coins - 20000);
+                                Handler.pInfoDict[ply.UserId].ListaPetow.Add(PetType.Custom);
+                                foreach (KeyValuePair<string, PlayerInfo> info in Handler.pInfoDict)
+                                {
+                                    File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
+                                }
+                                result.Message = "<color=green>Kupiłeś Custom Peta, wpisz .custompet aby go skonfigurować!</color>";
                                 result.State = CommandResultState.Ok;
                                 return result;
                             }
