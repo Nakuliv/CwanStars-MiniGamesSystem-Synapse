@@ -23,7 +23,7 @@ namespace MiniGamesSystem.Pets
             if(type == PetType.Custom)
             {
                 if (owner.GetPetOwnerScript().SpawnedPets.Contains(type))
-                    pet.Destroy();
+                    pet.Despawn();
             }
             if (owner.GetPetOwnerScript().SpawnedPets.Contains(type)) return false;
 

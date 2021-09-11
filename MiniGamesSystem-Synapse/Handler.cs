@@ -68,7 +68,7 @@ namespace MiniGamesSystem
             foreach (FileInfo file in new DirectoryInfo(MiniGamesSystem.DataPath).GetFiles())
             {
                 PlayerInfo info = JsonConvert.DeserializeObject<PlayerInfo>(File.ReadAllText(file.FullName));
-                if (info.Coins == 0)
+                if (info.Coins == 0 && info.ListaCzapek.Count == 0 && info.ListaPetow.Count == 0)
                 {
                     File.Delete(file.FullName);
                     continue;
