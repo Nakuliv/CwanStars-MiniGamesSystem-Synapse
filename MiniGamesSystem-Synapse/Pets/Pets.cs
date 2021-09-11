@@ -20,6 +20,11 @@ namespace MiniGamesSystem.Pets
             {
                 owner.gameObject.AddComponent<PetOwnerScript>();
             }
+            if(type == PetType.Custom)
+            {
+                if (owner.GetPetOwnerScript().SpawnedPets.Contains(type))
+                    pet.Destroy();
+            }
             if (owner.GetPetOwnerScript().SpawnedPets.Contains(type)) return false;
 
             pet = new Pet(owner, Nick, type);

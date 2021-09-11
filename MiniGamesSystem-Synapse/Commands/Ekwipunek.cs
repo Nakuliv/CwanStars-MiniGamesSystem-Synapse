@@ -260,10 +260,9 @@ namespace MiniGamesSystem.Commands
                 }
                 else if (arguments.At(1) == "pet")
                 {
-                    //_dummy.Destroy();
                     return new CommandResult
                     {
-                        Message = "<color=green>Odłożyłeś czapkę!</color>",
+                        Message = "<color=green>Odłożyłeś peta!</color>",
                         State = CommandResultState.Ok
                     };
                 }
