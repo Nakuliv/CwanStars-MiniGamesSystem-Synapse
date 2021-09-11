@@ -40,6 +40,7 @@ namespace MiniGamesSystem.Commands
                     "---------------------------\n" +
                     "<color=#EFC01A>Pety (BETA):</color>\n" +
                     "Amogus - <color=yellow>450</color> coinów\n" +
+                    "Doggo - <color=yellow>450</color> coinów\n"+
                     "---------------------------\n" +
                     "<color=#EFC01A>Rangi:</color>\n" +
                     "VIP na miesiąc - <color=yellow>10000</color> Coinów\n" +
@@ -83,7 +84,8 @@ namespace MiniGamesSystem.Commands
                             result.State = CommandResultState.Error;
                             return result;
                         }
-                    }else if (arguments.At(1) == "Doggo")
+                    }
+                    else if (arguments.At(1) == "Doggo")
                     {
                         if (Handler.pInfoDict[ply.UserId].Coins > 449)
                         {

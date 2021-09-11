@@ -38,18 +38,19 @@ namespace MiniGamesSystem.Pets
             switch (Type)
             {
                 case PetType.Amogus:
-                    Player.RoleType = RoleType.ClassD;
+                    Player.ClassManager.CurClass = RoleType.ClassD;
                     Player.Scale = new Vector3(1f, 0.5f, 1f);
                     Player.RankName = "Pet";
                     Player.RankColor = "yellow";
                     break;
                 case PetType.Doggo:
-                    Player.RoleType = RoleType.Scp93953;
+                    Player.ClassManager.CurClass = RoleType.Scp93953;
                     Player.Scale = new Vector3(0.5f, 0.5f, 0.5f);
                     Player.RankName = "Pet";
                     Player.RankColor = "yellow";
                     break;
                 case PetType.custom:
+                    Player.ClassManager.CurClass = RoleType.Tutorial;
                     Player.Scale = new Vector3(1f, 1f, 1f);
                     Player.RankName = "Custom Pet";
                     Player.RankColor = "yellow";

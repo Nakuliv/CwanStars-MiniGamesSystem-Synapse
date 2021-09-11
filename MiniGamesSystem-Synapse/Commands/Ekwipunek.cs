@@ -59,7 +59,7 @@ namespace MiniGamesSystem.Commands
                 "---------------------------\n" +
                 "<color=cyan>Aby wziąć jakąś czapkę wpisz: </color><color=yellow>.eq wez [nazwa czapki]</color>\n" +
                 "<color=cyan>Aby zdjąć czapkę wpisz: </color><color=yellow>.eq odloz</color>\n"+
-                "color=cyan>Aby wziąć jakiegoś peta wpisz: </color><color=yellow>.eq wez [nazwa peta] [nazwa wyświetlana w gre]</color>\n" +
+                "<color=cyan>Aby wziąć jakiegoś peta wpisz: </color><color=yellow>.eq wez [nazwa peta] [nazwa wyświetlana w gre]</color>\n" +
                 "<color=cyan>Aby odłożyć peta wpisz: </color><color=yellow>.eq odloz pet</color>",
                     State = CommandResultState.Ok
                 };
