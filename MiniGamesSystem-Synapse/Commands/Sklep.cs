@@ -58,7 +58,7 @@ namespace MiniGamesSystem.Commands
                         if (Handler.pInfoDict[ply.UserId].Coins > 449)
                         {
 
-                            if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.amogus))
+                            if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.Amogus))
                             {
                                 result.Message = "<color=red>Masz już tego peta!</color>";
                                 result.State = CommandResultState.Error;
@@ -67,12 +67,42 @@ namespace MiniGamesSystem.Commands
                             else
                             {
                                 Handler.pInfoDict[ply.UserId].Coins = (Handler.pInfoDict[ply.UserId].Coins - 450);
-                                Handler.pInfoDict[ply.UserId].ListaPetow.Add(PetType.amogus);
+                                Handler.pInfoDict[ply.UserId].ListaPetow.Add(PetType.Amogus);
                                 foreach (KeyValuePair<string, PlayerInfo> info in Handler.pInfoDict)
                                 {
                                     File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
                                 }
                                 result.Message = "<color=green>Kupiłeś Amogus, wpisz .eq aby zobaczyć listę twoich czapek i petów, lub nałożyć czapkę!</color>";
+                                result.State = CommandResultState.Ok;
+                                return result;
+                            }
+                        }
+                        else
+                        {
+                            result.Message = "<color=red>Nie stać cię na to!</color>";
+                            result.State = CommandResultState.Error;
+                            return result;
+                        }
+                    }else if (arguments.At(1) == "Doggo")
+                    {
+                        if (Handler.pInfoDict[ply.UserId].Coins > 449)
+                        {
+
+                            if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.Doggo))
+                            {
+                                result.Message = "<color=red>Masz już tego peta!</color>";
+                                result.State = CommandResultState.Error;
+                                return result;
+                            }
+                            else
+                            {
+                                Handler.pInfoDict[ply.UserId].Coins = (Handler.pInfoDict[ply.UserId].Coins - 450);
+                                Handler.pInfoDict[ply.UserId].ListaPetow.Add(PetType.Doggo);
+                                foreach (KeyValuePair<string, PlayerInfo> info in Handler.pInfoDict)
+                                {
+                                    File.WriteAllText(Path.Combine(MiniGamesSystem.DataPath, $"{info.Key}.json"), JsonConvert.SerializeObject(info.Value, Formatting.Indented));
+                                }
+                                result.Message = "<color=green>Kupiłeś Doggo, wpisz .eq aby zobaczyć listę twoich czapek i petów, lub nałożyć czapkę!</color>";
                                 result.State = CommandResultState.Ok;
                                 return result;
                             }
