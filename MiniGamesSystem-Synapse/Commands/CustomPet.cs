@@ -70,9 +70,9 @@ namespace MiniGamesSystem.Commands
                         }
                         break;
                     case "rozmiar":
-                        var x = Convert.ToInt32(arguments.At(1));
-                        var y = Convert.ToInt32(arguments.At(2));
-                        var z = Convert.ToInt32(arguments.At(3));
+                        float x = float.Parse(arguments.At(1));
+                        float y = float.Parse(arguments.At(2));
+                        float z = float.Parse(arguments.At(3));
                         Handler.pInfoDict[ply.UserId].custompetSize = new UnityEngine.Vector3(x, y, z);
                         foreach (KeyValuePair<string, PlayerInfo> info in Handler.pInfoDict)
                         {

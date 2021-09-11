@@ -41,7 +41,7 @@ namespace MiniGamesSystem.Commands
                     "<color=#EFC01A>Pety (BETA):</color>\n" +
                     "Amogus - <color=yellow>450</color> coinów\n" +
                     "Doggo - <color=yellow>450</color> coinów\n"+
-                    "(<color=#EFC01A>NOWOŚĆ!</color)Custom - <color=yellow>20000</color>\n"+
+                    "(<color=#EFC01A>NOWOŚĆ!</color>)Custom - <color=yellow>20000</color>\n"+
                     "---------------------------\n" +
                     "<color=#EFC01A>Rangi:</color>\n" +
                     "VIP na miesiąc - <color=yellow>10000</color> Coinów\n" +
