@@ -9,6 +9,7 @@ namespace MiniGamesSystem.Pets
     public enum PetType
     {
         custom,
-        amogus
+        Amogus,
+        Doggo
     }
 }

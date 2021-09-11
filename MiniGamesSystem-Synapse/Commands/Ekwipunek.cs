@@ -55,10 +55,12 @@ namespace MiniGamesSystem.Commands
                 "<color=#EFC01A>Twoje Czapki:</color>\n" +
                 $"{(hasData ? listaczapek(ply) : "[NIE MASZ ŻADNYCH CZAPEK]")}\n" +
                 "<color=#EFC01A>Twoje Pety:</color>\n" +
-                $"{listapetow(ply)}\n"+
+                $"{listapetow(ply)}\n" +
                 "---------------------------\n" +
                 "<color=cyan>Aby wziąć jakąś czapkę wpisz: </color><color=yellow>.eq wez [nazwa czapki]</color>\n" +
-                "<color=cyan>Aby zdjąć czapkę wpisz: </color><color=yellow>.eq odloz</color>",
+                "<color=cyan>Aby zdjąć czapkę wpisz: </color><color=yellow>.eq odloz</color>\n"+
+                "color=cyan>Aby wziąć jakiegoś peta wpisz: </color><color=yellow>.eq wez [nazwa peta] [nazwa wyświetlana w gre]</color>\n" +
+                "<color=cyan>Aby odłożyć peta wpisz: </color><color=yellow>.eq odloz pet</color>",
                     State = CommandResultState.Ok
                 };
             }
@@ -182,11 +184,11 @@ namespace MiniGamesSystem.Commands
                 }
                 else if (arguments.At(1) == "Amogus")
                 {
-                    if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.amogus))
+                    if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.Amogus))
                     {
                         if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
                         {
-                                if(Pet.SpawnPet(ply, "test", PetType.amogus, out var pet))
+                                if(Pet.SpawnPet(ply, arguments.At(2), PetType.Amogus, out var pet))
                                 {
                                     return new CommandResult
                                     {
@@ -194,6 +196,31 @@ namespace MiniGamesSystem.Commands
                                         State = CommandResultState.Ok
                                     };
                                 }
+                        }
+                    }
+                    else
+                    {
+                        return new CommandResult
+                        {
+                            Message = "<color=red>Nie masz takiego peta w ekwipunku!</color>",
+                            State = CommandResultState.Error
+                        };
+                    }
+                }
+                else if (arguments.At(1) == "Doggo")
+                {
+                    if (Handler.pInfoDict[ply.UserId].ListaPetow.Contains(PetType.Doggo))
+                    {
+                        if (ply.RoleType != RoleType.None && ply.RoleType != RoleType.Spectator)
+                        {
+                            if (Pet.SpawnPet(ply, arguments.At(2), PetType.Doggo, out var pet))
+                            {
+                                return new CommandResult
+                                {
+                                    Message = "<color=green>Zrespiono Peta!</color>",
+                                    State = CommandResultState.Ok
+                                };
+                            }
                         }
                     }
                     else
