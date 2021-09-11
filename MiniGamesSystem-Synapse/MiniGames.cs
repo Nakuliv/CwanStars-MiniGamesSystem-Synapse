@@ -7,6 +7,7 @@ using Synapse.Api;
 using Synapse;
 using MapGeneration;
 using GameCore;
+using Synapse.Api.Items;
 
 namespace MiniGamesSystem
 {
@@ -366,9 +367,27 @@ namespace MiniGamesSystem
             {
                 player.RoleType = RoleType.ClassD;
                 player.GiveEffect(Effect.Scp207, 3);
+                player.Inventory.AddItem(ItemType.Adrenaline);
+                player.Inventory.AddItem(ItemType.Adrenaline);
+                player.Inventory.AddItem(ItemType.SCP500);
+                player.Inventory.AddItem(ItemType.Medkit);
+                player.Inventory.AddItem(ItemType.Medkit);
+                Timing.RunCoroutine(WarHeadRunLoop(player), "WHRLoop");
             }
 
             Round.Get.RoundLock = true;
+        }
+
+        static IEnumerator<float> WarHeadRunLoop(Player ply)
+        {
+            while (true)
+            {
+                if (ply.Room.RoomType == RoomName.HczWarhead)
+                {
+                    ply.Position = Extensions.GetRandomSpawnPoint(RoleType.ClassD);
+                }
+                yield return Timing.WaitForSeconds(1f);
+            }
         }
 
         public static void DgBall()
